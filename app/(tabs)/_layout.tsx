@@ -1,33 +1,45 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Tabs } from "expo-router";
+import { Text } from "react-native";
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
+        tabBarStyle: {
+          backgroundColor: "#0B1020",
+          borderTopWidth: 0,
+        },
+        tabBarActiveTintColor: "#2DD4BF",
+        tabBarInactiveTintColor: "#94A3B8",
+      }}
+    >
       <Tabs.Screen
-        name="index"
+        name="mood"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: "Mood",
+          tabBarIcon: () => <Text>✨</Text>,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="practices"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: "Practice",
+          tabBarIcon: () => <Text>🧘</Text>,
+        }}
+      />
+      <Tabs.Screen
+        name="cosmic"
+        options={{
+          title: "Cosmic",
+          tabBarIcon: () => <Text>🌙</Text>,
+        }}
+      />
+      <Tabs.Screen
+        name="story"
+        options={{
+          title: "Story",
+          tabBarIcon: () => <Text>📖</Text>,
         }}
       />
     </Tabs>
