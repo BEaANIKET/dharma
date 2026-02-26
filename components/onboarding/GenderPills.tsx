@@ -1,5 +1,6 @@
 import { Text, View } from "react-native";
 import AnimatedPressable from "../AnimatedPressable";
+import { colors } from "@/theme/colors";
 
 type GenderOption = "Male" | "Female" | "Other";
 
@@ -25,7 +26,7 @@ export default function GenderPills({ value, onChange }: GenderPillsProps) {
                 : "bg-white/5 border-white/10"
             } mr-3 mb-3`}
             containerStyle={{
-              shadowColor: "#22D3EE",
+              shadowColor: colors.primary,
               shadowOpacity: isActive ? 0.25 : 0.1,
               shadowRadius: 12,
               shadowOffset: { width: 0, height: 0 },

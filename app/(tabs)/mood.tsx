@@ -1,4 +1,5 @@
-import { ScrollView, Text, View } from "react-native";
+import { useEffect, useRef } from "react";
+import { Animated, Easing, Platform, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -11,12 +12,47 @@ import PrimaryButton from "@/components/PrimaryButton";
 import DharmaHeader from "@/components/DharmaHeader";
 import { MOODS, moodMap } from "@/constants/moodThemes";
 import { useMoodStore } from "@/store/useMoodStore";
+import { colors } from "@/theme/colors";
+
+const SERIF = Platform.OS === "ios" ? "Georgia" : "serif";
 
 export default function MoodScreen() {
   const selectedMood = useMoodStore((state) => state.selectedMood);
   const setMood = useMoodStore((state) => state.setMood);
   const insets = useSafeAreaInsets();
   const selectedTheme = selectedMood ? moodMap[selectedMood] : null;
+  const glow = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(glow, {
+          toValue: 1,
+          duration: 2600,
+          easing: Easing.inOut(Easing.cubic),
+          useNativeDriver: false,
+        }),
+        Animated.timing(glow, {
+          toValue: 0,
+          duration: 2600,
+          easing: Easing.inOut(Easing.cubic),
+          useNativeDriver: false,
+        }),
+      ])
+    );
+
+    loop.start();
+    return () => loop.stop();
+  }, [glow]);
+
+  const glowCardStyle = {
+    transform: [{ translateY: glow.interpolate({ inputRange: [0, 1], outputRange: [0, -4] }) }],
+    shadowColor: colors.glow,
+    shadowOpacity: glow.interpolate({ inputRange: [0, 1], outputRange: [0.12, 0.32] }),
+    shadowRadius: glow.interpolate({ inputRange: [0, 1], outputRange: [14, 26] }),
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 10,
+  };
 
   return (
     <GradientBackground>
@@ -28,28 +64,39 @@ export default function MoodScreen() {
         showsVerticalScrollIndicator={false}
       >
         <DharmaHeader />
-        <Text className="text-textPrimary text-2xl font-semibold mb-6">
+        <Text
+          className="mb-6 text-4xl italic leading-[46px]"
+          style={{ color: colors.onboardingWhite90, fontFamily: SERIF }}
+        >
           How’s your spirit today?
         </Text>
 
-        <GlassCard>
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center">
-              <View className="h-12 w-12 rounded-full items-center justify-center bg-cyan-400/20 border border-cyan-300/40">
-                <View className="h-5 w-5 rounded-full bg-cyan-300" />
+        <Animated.View style={glowCardStyle}>
+          <GlassCard>
+            <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center">
+                <View className="h-12 w-12 rounded-full items-center justify-center border border-primary/40 bg-primary/20">
+                  <View className="h-5 w-5 rounded-full bg-glow" />
+                </View>
+                <View className="ml-4">
+                  <Text
+                    className="text-2xl italic"
+                    style={{ color: colors.primary, fontFamily: SERIF }}
+                  >
+                    Today&apos;s Cosmic Energy
+                  </Text>
+                  <Text
+                    className="mt-1"
+                    style={{ color: colors.onboardingWhite30, fontFamily: SERIF }}
+                  >
+                    Ekadashi · Rohini · Mercury ☿ Retrograde
+                  </Text>
+                </View>
               </View>
-              <View className="ml-4">
-                <Text className="text-primary text-2xl font-medium">
-                  Today&apos;s Cosmic Energy
-                </Text>
-                <Text className="text-textSecondary mt-1">
-                  Ekadashi · Rohini · Mercury ☿ Retrograde
-                </Text>
-              </View>
+              <Feather name="chevron-down" size={18} color={colors.glow} />
             </View>
-            <Feather name="chevron-down" size={18} color="#67E8F9" />
-          </View>
-        </GlassCard>
+          </GlassCard>
+        </Animated.View>
 
         <View className="flex-row flex-wrap justify-between mt-6">
           {MOODS.map((mood) => (

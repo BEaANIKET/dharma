@@ -20,55 +20,24 @@ import AnimatedPressable from "@/components/AnimatedPressable";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
 import PhoneInput from "@/components/onboarding/PhoneInput";
 import PrimaryGlowButton from "@/components/onboarding/PrimaryGlowButton";
+import {
+  onboardingFormCopy,
+  onboardingPalette as C,
+  onboardingTimings,
+  onboardingVerses as VERSES,
+} from "@/theme/onboarding";
 
-/* ─── Palette ─────────────────────────────────────────────────── */
-const C = {
-  bg: "#070c07",
-  goldDim: "rgba(196,162,68,0.42)",
-  goldFaint: "rgba(196,162,68,0.28)",
-  goldLabel: "rgba(196,162,68,0.65)",
-  white90: "rgba(255,255,255,0.90)",
-  white30: "rgba(255,255,255,0.30)",
-  white18: "rgba(255,255,255,0.18)",
-  white10: "rgba(255,255,255,0.10)",
-  white06: "rgba(255,255,255,0.06)",
-  strip: "#0c0c08",
-};
-
-/* ─── Timing constants ────────────────────────────────────────── */
-const INTRO_MAX_MS = 52000; // hard cap on video length
-const TYPE_SPEED_MS = 55;     // ms per character while typing
-const VERSE_HOLD_MS = 1400;  // pause at end of typed verse
-const VERSE_FADE_MS = 500;    // cross-fade between verses
-
-// Cinematic end-sequence timing
-const VIDEO_FADE_MS = 2200;  // video opacity 1 → 0
-const VOL_TICK_MS = 1200;    // volume polling interval
-const OVERLAY_OUT_MS = 900;    // verse overlay → 0
-const FORM_DRIFT_MS = 1800;  // form container slide-up duration
-const FORM_EASE_DELAY = 150;    // wait before form starts entering
-// Stagger between heading / sub-text / input / button
-const STAGGER = 220;
-
-/* ─── Sanskrit verses ─────────────────────────────────────────── */
-const VERSES = [
-  {
-    label: "श्रीमद् भगवद् गीता · 2.47",
-    text: "कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।\nमा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥",
-  },
-  {
-    label: "श्रीमद् भगवद् गीता · 6.5",
-    text: "उद्धरेदात्मनात्मानं नात्मानमवसादयेत्।\nआत्मैव ह्यात्मनो बन्धुरात्मैव रिपुरात्मनः॥",
-  },
-  {
-    label: "श्रीमद् भगवद् गीता · 2.20",
-    text: "न जायते म्रियते वा कदाचित्\nअजो नित्यः शाश्वतोऽयं पुराणो\nन हन्यते हन्यमाने शरीरे॥",
-  },
-  {
-    label: "श्रीमद् भगवद् गीता · 3.27",
-    text: "प्रकृतेः क्रियमाणानि गुणैः कर्माणि सर्वशः।\nअहंकारविमूढात्मा कर्ताहमिति मन्यते॥",
-  },
-];
+const {
+  INTRO_MAX_MS,
+  TYPE_SPEED_MS,
+  VERSE_HOLD_MS,
+  VERSE_FADE_MS,
+  VIDEO_FADE_MS,
+  OVERLAY_OUT_MS,
+  FORM_DRIFT_MS,
+  FORM_EASE_DELAY,
+  STAGGER,
+} = onboardingTimings;
 
 /* ─── Phase ───────────────────────────────────────────────────── */
 type Phase = "video" | "ending" | "form";
@@ -113,13 +82,14 @@ export default function OnboardingWelcome() {
   const blackFade = useRef(new Animated.Value(0)).current;
 
   // Individual form rows — each has opacity + translateY
-  const mkAV = (v = 0) => useRef(new Animated.Value(v)).current;
-  /* eslint-disable react-hooks/rules-of-hooks */
-  const headOp = mkAV(); const headTY = mkAV(22);
-  const subOp = mkAV(); const subTY = mkAV(22);
-  const inputOp = mkAV(); const inputTY = mkAV(22);
-  const btnOp = mkAV(); const btnTY = mkAV(22);
-  /* eslint-enable react-hooks/rules-of-hooks */
+  const headOp = useRef(new Animated.Value(0)).current;
+  const headTY = useRef(new Animated.Value(22)).current;
+  const subOp = useRef(new Animated.Value(0)).current;
+  const subTY = useRef(new Animated.Value(22)).current;
+  const inputOp = useRef(new Animated.Value(0)).current;
+  const inputTY = useRef(new Animated.Value(22)).current;
+  const btnOp = useRef(new Animated.Value(0)).current;
+  const btnTY = useRef(new Animated.Value(22)).current;
 
   /* ── Phone store ── */
   const phone = useOnboardingStore((s) => s.phone);
@@ -221,8 +191,7 @@ export default function OnboardingWelcome() {
     [stopTyping, verseTextOp]
   );
   const typeFormText = useCallback(() => {
-    const headline = "when did your\nsoul arrive?";
-    const sub = "through the noise… through the scrolling…\nremember who you are.";
+    const { headline, sub } = onboardingFormCopy;
 
     let hIndex = 0;
     let sIndex = 0;
@@ -389,7 +358,7 @@ export default function OnboardingWelcome() {
         keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={{ flex: 1 }}>
+          <View className="flex-1">
 
             {/* ── Video layer (fades out cinematically) ── */}
             <Animated.View style={[StyleSheet.absoluteFill, { opacity: videoOpacity }]}>
@@ -408,7 +377,7 @@ export default function OnboardingWelcome() {
 
             {/* ── Persistent dark vignette (over video, always) ── */}
             <LinearGradient
-              colors={["rgba(7,12,7,0.55)", "rgba(7,12,7,0.97)"]}
+              colors={[C.vignetteStart, C.vignetteEnd]}
               style={StyleSheet.absoluteFill}
               pointerEvents="none"
             />
@@ -419,20 +388,27 @@ export default function OnboardingWelcome() {
               pointerEvents="none"
               style={[
                 StyleSheet.absoluteFill,
-                { backgroundColor: "#000", opacity: blackFade },
+                { backgroundColor: C.black, opacity: blackFade },
               ]}
             />
 
             {/* ── Verse overlay (video + ending phases) ── */}
             {phase !== "form" && (
               <Animated.View
-                style={[styles.verseOverlay, { opacity: overlayOp }]}
+                className="absolute inset-0 items-center justify-center px-8"
+                style={{ opacity: overlayOp }}
                 pointerEvents="none"
               >
-                <Animated.Text style={[styles.verseLabel, { opacity: labelOp }]}>
+                <Animated.Text
+                  className="mb-[18px] text-center text-[10px] uppercase tracking-[4px]"
+                  style={{ opacity: labelOp, color: C.verseLabel, fontFamily: SERIF }}
+                >
                   {VERSES[verseIdx % VERSES.length].label}
                 </Animated.Text>
-                <Animated.Text style={[styles.verseText, { opacity: verseTextOp }]}>
+                <Animated.Text
+                  className="text-center text-[19px] italic leading-8 tracking-[0.4px]"
+                  style={{ opacity: verseTextOp, color: C.verseText, fontFamily: SERIF }}
+                >
                   {typedText}
                 </Animated.Text>
               </Animated.View>
@@ -443,28 +419,46 @@ export default function OnboardingWelcome() {
             {phase === "form" && (
               <Animated.View
                 style={[
-                  styles.formOuter,
+                  { position: "absolute", left: 24, right: 24, bottom: 0, paddingBottom: 52 },
                   { opacity: formOp, transform: [{ translateY: formTY }] },
                 ]}
               >
                 {/* ॐ accent */}
-                <Text style={styles.omLabel}>ॐ  dharma</Text>
+                <Text
+                  className="mb-4 text-xs tracking-[3px]"
+                  style={{ color: C.goldOm, fontFamily: SERIF }}
+                >
+                  ॐ  dharma
+                </Text>
 
                 {/* Headline */}
                 <Animated.Text
-                  style={[styles.headline, { opacity: headOp, transform: [{ translateY: headTY }] }]}
+                  className="mb-[18px] text-4xl italic leading-[46px]"
+                  style={{
+                    opacity: headOp,
+                    transform: [{ translateY: headTY }],
+                    color: C.white90,
+                    fontFamily: SERIF,
+                  }}
                 >
                   {typedHeadline}
                 </Animated.Text>
 
                 {/* Gold rule */}
                 <Animated.View
-                  style={[styles.goldRule, { opacity: headOp }]}
+                  className="mb-4 h-px w-8"
+                  style={{ opacity: headOp, backgroundColor: C.goldFaint }}
                 />
 
                 {/* Sub-text */}
                 <Animated.Text
-                  style={[styles.subText, { opacity: subOp, transform: [{ translateY: subTY }] }]}
+                  className="mb-8 text-[15px] italic leading-[25px]"
+                  style={{
+                    opacity: subOp,
+                    transform: [{ translateY: subTY }],
+                    color: C.white30,
+                    fontFamily: SERIF,
+                  }}
                 >
                   {typedSubText}
                 </Animated.Text>
@@ -472,7 +466,7 @@ export default function OnboardingWelcome() {
                 {/* Input */}
                 <Animated.View
                   style={[
-                    styles.inputBlock,
+                    { width: "100%" },
                     { opacity: inputOp, transform: [{ translateY: inputTY }] },
                   ]}
                 >
@@ -480,9 +474,17 @@ export default function OnboardingWelcome() {
                     behavior={Platform.OS === "ios" ? "padding" : undefined}
                     keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
                   >
-                    <Text style={styles.inputLabel}>mobile number</Text>
+                    <Text
+                      className="mb-[10px] text-[11px] uppercase tracking-[4px]"
+                      style={{ color: C.goldLabel, fontFamily: SANS, fontWeight: "400" }}
+                    >
+                      mobile number
+                    </Text>
                     <PhoneInput value={phone} onChange={setPhone} />
-                    <Text style={styles.inputHint}>
+                    <Text
+                      className="mt-2 text-xs leading-[19px] tracking-[0.3px]"
+                      style={{ color: C.white18, fontFamily: SANS }}
+                    >
                       for your daily dharmic sunrise message · no spam ever
                     </Text>
                   </KeyboardAvoidingView>
@@ -491,7 +493,7 @@ export default function OnboardingWelcome() {
                 {/* Button */}
                 <Animated.View
                   style={[
-                    styles.btnBlock,
+                    { marginTop: 24 },
                     { opacity: btnOp, transform: [{ translateY: btnTY }] },
                   ]}
                 >
@@ -501,7 +503,10 @@ export default function OnboardingWelcome() {
                     disabled={phone.trim().length < 7}
                     accessibilityLabel="Continue to details"
                   />
-                  <Text style={styles.privacyNote}>
+                  <Text
+                    className="mt-[18px] text-center text-[11px] leading-[18px] tracking-[0.4px]"
+                    style={{ color: C.privacy, fontFamily: SANS }}
+                  >
                     ∴  your data is sacred · encrypted · never sold
                   </Text>
                 </Animated.View>
@@ -510,16 +515,25 @@ export default function OnboardingWelcome() {
 
             {/* ── Skip (video phase only) ── */}
             {phase === "video" && (
-              <View style={[styles.skipRow, { paddingTop: insets.top + 16 }]}>
+              <View
+                className="absolute left-0 right-0 top-0 z-20 flex-row justify-end px-5"
+                style={{ paddingTop: insets.top + 16 }}
+              >
                 <AnimatedPressable
                   onPress={onVideoEnd}
-                  style={styles.skipBtn}
+                  className="min-h-9 justify-center rounded-[20px] border border-onboardingWhite10 bg-onboardingWhite06 px-4 py-2"
                   accessibilityLabel="Skip intro"
                 >
-                  <Text style={styles.skipText}>skip</Text>
+                  <Text
+                    className="text-[11px] uppercase tracking-[4px]"
+                    style={{ color: C.white30, fontFamily: SANS }}
+                  >
+                    skip
+                  </Text>
                 </AnimatedPressable>
               </View>
             )}
+            
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
@@ -529,138 +543,3 @@ export default function OnboardingWelcome() {
 /* ─── Styles ──────────────────────────────────────────────────── */
 const SERIF = Platform.OS === "ios" ? "Georgia" : "serif";
 const SANS = Platform.OS === "ios" ? "Helvetica Neue" : "sans-serif";
-
-const styles = StyleSheet.create({
-  /* verse overlay */
-  verseOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 32,
-  },
-  verseLabel: {
-    color: "rgba(224,239,255,0.5)",
-    fontSize: 10,
-    letterSpacing: 4,
-    textTransform: "uppercase",
-    fontFamily: SERIF,
-    marginBottom: 18,
-    textAlign: "center",
-  },
-  verseText: {
-    color: "rgba(255,255,255,0.87)",
-    fontSize: 19,
-    lineHeight: 32,
-    textAlign: "center",
-    fontFamily: SERIF,
-    fontStyle: "italic",
-    letterSpacing: 0.4,
-  },
-
-  /* film strips */
-  strip: {
-    position: "absolute", left: 0, right: 0, height: 50,
-    backgroundColor: C.strip,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 10,
-    gap: 7,
-  },
-  stripTop: { top: 0, borderBottomWidth: 1, borderBottomColor: "rgba(255,255,255,0.04)" },
-  stripBottom: { bottom: 0, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.04)" },
-  stripHole: {
-    width: 28, height: 20, borderRadius: 3,
-    borderWidth: 1, borderColor: "rgba(255,255,255,0.07)",
-    backgroundColor: "#080808",
-  },
-  stripLabel: {
-    position: "absolute",
-    fontSize: 9, letterSpacing: 2,
-    color: "rgba(180,145,55,0.35)",
-    fontFamily: SERIF,
-  },
-
-  /* form */
-  formOuter: {
-    position: "absolute",
-    left: 24, right: 24, bottom: 0,
-    paddingBottom: 52,
-  },
-  omLabel: {
-    fontSize: 12, letterSpacing: 3,
-    color: "rgba(196,162,68,0.30)",
-    fontFamily: SERIF,
-    marginBottom: 16,
-  },
-  headline: {
-    fontSize: 36,
-    fontFamily: SERIF,
-    fontStyle: "italic",
-    color: C.white90,
-    lineHeight: 46,
-    marginBottom: 18,
-  },
-  goldRule: {
-    width: 32, height: 1,
-    backgroundColor: C.goldFaint,
-    marginBottom: 16,
-  },
-  subText: {
-    fontSize: 15,
-    fontFamily: SERIF,
-    fontStyle: "italic",
-    color: C.white30,
-    lineHeight: 25,
-    marginBottom: 32,
-  },
-  inputBlock: {
-    width: "100%",
-  },
-  inputLabel: {
-    fontSize: 11, letterSpacing: 4,
-    textTransform: "uppercase",
-    color: C.goldLabel,
-    fontFamily: SANS,
-    fontWeight: "400",
-    marginBottom: 10,
-  },
-  inputHint: {
-    fontSize: 12, letterSpacing: 0.3, lineHeight: 19,
-    color: C.white18,
-    fontFamily: SANS,
-    marginTop: 8,
-  },
-  btnBlock: {
-    marginTop: 24,
-  },
-  privacyNote: {
-    fontSize: 11, letterSpacing: 0.4, lineHeight: 18,
-    color: "rgba(255,255,255,0.15)",
-    fontFamily: SANS,
-    textAlign: "center",
-    marginTop: 18,
-  },
-
-  /* skip */
-  skipRow: {
-    position: "absolute", top: 0, left: 0, right: 0,
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    paddingHorizontal: 20,
-    zIndex: 20,
-  },
-  skipBtn: {
-    paddingHorizontal: 16, paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: C.white06,
-    borderWidth: 1, borderColor: C.white10,
-    minHeight: 36,
-    justifyContent: "center",
-  },
-  skipText: {
-    color: C.white30, fontSize: 11,
-    letterSpacing: 4,
-    textTransform: "uppercase",
-    fontFamily: SANS,
-  },
-});

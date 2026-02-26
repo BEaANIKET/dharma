@@ -4,6 +4,7 @@ import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useAuthStore } from "@/store/useAuthStore";
 import { LinearGradient } from "expo-linear-gradient";
+import { colors } from "@/theme/colors";
 
 export default function DharmaHeader() {
   const [open, setOpen] = useState(false);
@@ -39,7 +40,7 @@ export default function DharmaHeader() {
           </Pressable>
 
           <Pressable className="bg-white/5 border border-white/10 p-3 rounded-xl">
-            <Feather name="settings" size={18} color="#94A3B8" />
+            <Feather name="settings" size={18} color={colors.textSecondary} />
           </Pressable>
         </View>
 
@@ -58,7 +59,7 @@ export default function DharmaHeader() {
           {initials ? (
             <Text className="text-primary font-semibold text-base">{initials}</Text>
           ) : (
-            <Feather name="user" size={18} color="#94A3B8" />
+            <Feather name="user" size={18} color={colors.textSecondary} />
           )}
         </Pressable>
       </View>
@@ -78,7 +79,7 @@ export default function DharmaHeader() {
             className="rounded-t-3xl overflow-hidden"
           >
             <LinearGradient
-              colors={["#0C1222", "#111827", "#0A0F1E"]}
+              colors={[colors.background, colors.backgroundSoft, colors.backgroundDeep]}
               className="p-6 rounded-t-3xl"
             >
               <View className="w-12 h-1 bg-white/20 rounded-full self-center mb-6" />

@@ -1,4 +1,5 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text } from "react-native";
+import { colors } from "@/theme/colors";
 
 interface MoodCardProps {
   emoji: string;
@@ -14,9 +15,9 @@ export default function MoodCard({
   emoji,
   label,
   isSelected = false,
-  accentColor = "#22D3EE",
-  softColor = "#151C2F",
-  borderColor = "#22D3EE",
+  accentColor = colors.primary,
+  softColor = colors.card,
+  borderColor = colors.primary,
   onPress,
 }: MoodCardProps) {
 
@@ -27,10 +28,10 @@ export default function MoodCard({
       style={{
         backgroundColor: isSelected
           ? softColor
-          : "#151C2F",
+          : colors.card,
         borderColor: isSelected
           ? borderColor
-          : "#BFA6A1",
+          : colors.moodBorderMuted,
       }}
     >
       <Text className="text-3xl">{emoji}</Text>

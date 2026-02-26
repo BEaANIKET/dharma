@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Text, View } from "react-native";
 import AnimatedPressable from "../AnimatedPressable";
+import { colors } from "@/theme/colors";
 
 type PrimaryGlowButtonProps = {
   label: string;
@@ -24,7 +25,7 @@ export default function PrimaryGlowButton({
           disabled ? "bg-white/5" : "bg-cyan-400/20"
         }`}
         containerStyle={{
-          shadowColor: "#22D3EE",
+          shadowColor: colors.primary,
           shadowOpacity: disabled ? 0.1 : 0.3,
           shadowRadius: 18,
           shadowOffset: { width: 0, height: 0 },

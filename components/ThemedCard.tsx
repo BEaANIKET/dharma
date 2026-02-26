@@ -2,6 +2,7 @@ import { ViewStyle } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { ReactNode } from "react";
 import { MoodTheme } from "@/types/mood";
+import { colors } from "@/theme/colors";
 
 type Props = {
   theme?: MoodTheme | null;
@@ -14,9 +15,9 @@ type Props = {
 const defaultTheme: MoodTheme = {
   label: "Default",
   emoji: "✨",
-  accent: "#3B82F6",
-  soft: "#1E293B",
-  border: "#334155",
+  accent: colors.themeDefaultAccent,
+  soft: colors.themeDefaultSoft,
+  border: colors.themeDefaultBorder,
 };
 
 export default function ThemedCard({

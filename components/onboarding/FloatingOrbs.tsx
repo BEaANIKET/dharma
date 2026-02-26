@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Animated, ViewStyle } from "react-native";
+import { colors } from "@/theme/colors";
 
 type OrbProps = {
   size: number;
@@ -41,8 +42,8 @@ function Orb({ size, top, left, delay, duration, opacity }: OrbProps) {
     width: size,
     height: size,
     borderRadius: size / 2,
-    backgroundColor: "rgba(34, 211, 238, 0.12)",
-    shadowColor: "#22D3EE",
+    backgroundColor: colors.primaryTint12,
+    shadowColor: colors.primary,
     shadowOpacity: 0.2,
     shadowRadius: 18,
     shadowOffset: { width: 0, height: 0 },

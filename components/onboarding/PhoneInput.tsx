@@ -1,4 +1,5 @@
 import { Text, TextInput, View } from "react-native";
+import { colors } from "@/theme/colors";
 
 type PhoneInputProps = {
   value: string;
@@ -14,7 +15,7 @@ export default function PhoneInput({ value, onChange }: PhoneInputProps) {
       <TextInput
         className="flex-1 ml-3 text-textPrimary text-base"
         placeholder="(555) 000-0000"
-        placeholderTextColor="#6B7280"
+        placeholderTextColor={colors.textMuted}
         keyboardType="phone-pad"
         value={value}
         onChangeText={onChange}
