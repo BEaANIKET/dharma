@@ -1,17 +1,21 @@
 import { create } from "zustand";
 
-type Gender = "Male" | "Female" | "Other" | null;
-
 type OnboardingState = {
   phone: string;
   name: string;
-  age: string;
-  gender: Gender;
+  email: string;
+  dateOfBirth: Date | null;
+  gender: string | null;
+  city: string;
   completed: boolean;
+
   setPhone: (phone: string) => void;
   setName: (name: string) => void;
-  setAge: (age: string) => void;
-  setGender: (gender: Gender) => void;
+  setEmail: (email: string) => void;
+  setDateOfBirth: (date: Date) => void;
+  setCity: (city: string) => void;
+  setGender: (gender: string) => void;
+
   markCompleted: () => void;
   reset: () => void;
 };
@@ -19,19 +23,28 @@ type OnboardingState = {
 export const useOnboardingStore = create<OnboardingState>((set) => ({
   phone: "",
   name: "",
-  age: "",
+  email: "",
+  dateOfBirth: null,
   gender: null,
+  city: "",
   completed: false,
+
   setPhone: (phone) => set({ phone }),
   setName: (name) => set({ name }),
-  setAge: (age) => set({ age }),
+  setEmail: (email) => set({ email }),
+  setCity: (city) => set({city}),
+  setDateOfBirth: (date) => set({ dateOfBirth: date }),
+
   setGender: (gender) => set({ gender }),
+
   markCompleted: () => set({ completed: true }),
+
   reset: () =>
     set({
       phone: "",
       name: "",
-      age: "",
+      email: "",
+      dateOfBirth: null,
       gender: null,
       completed: false,
     }),

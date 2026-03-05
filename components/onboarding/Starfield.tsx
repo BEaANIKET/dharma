@@ -3,8 +3,8 @@ import { View } from "react-native";
 import { colors } from "@/theme/colors";
 
 type Star = {
-  top: string;
-  left: string;
+  top: `${number}%`;
+  left: `${number}%`;
   size: number;
   opacity: number;
 };

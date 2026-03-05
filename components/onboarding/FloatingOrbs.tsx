@@ -1,11 +1,13 @@
 import { useEffect, useRef } from "react";
-import { Animated, ViewStyle } from "react-native";
+import { Animated, type ViewStyle } from "react-native";
 import { colors } from "@/theme/colors";
+
+type Percent = `${number}%`;
 
 type OrbProps = {
   size: number;
-  top: string;
-  left: string;
+  top: Percent;
+  left: Percent;
   delay: number;
   duration: number;
   opacity: number;
@@ -35,7 +37,7 @@ function Orb({ size, top, left, delay, duration, opacity }: OrbProps) {
     return () => animation.stop();
   }, [delay, duration, translateY]);
 
-  const orbStyle: ViewStyle = {
+  const orbStyle = {
     position: "absolute",
     top,
     left,
@@ -47,7 +49,7 @@ function Orb({ size, top, left, delay, duration, opacity }: OrbProps) {
     shadowOpacity: 0.2,
     shadowRadius: 18,
     shadowOffset: { width: 0, height: 0 },
-  };
+  } satisfies ViewStyle;
 
   return (
     <Animated.View

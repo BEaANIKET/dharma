@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  Text,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
@@ -16,10 +15,10 @@ import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import CosmicBackground from "@/components/onboarding/CosmicBackground";
-import AnimatedPressable from "@/components/AnimatedPressable";
-import { useOnboardingStore } from "@/store/useOnboardingStore";
-import PhoneInput from "@/components/onboarding/PhoneInput";
-import PrimaryGlowButton from "@/components/onboarding/PrimaryGlowButton";
+import WelcomeVideoLayer from "@/components/onboarding/welcome/WelcomeVideoLayer";
+import WelcomeVerseOverlay from "@/components/onboarding/welcome/WelcomeVerseOverlay";
+import WelcomeForm from "@/components/onboarding/welcome/WelcomeForm";
+import WelcomeSkipButton from "@/components/onboarding/welcome/WelcomeSkipButton";
 import {
   onboardingFormCopy,
   onboardingPalette as C,
@@ -90,10 +89,6 @@ export default function OnboardingWelcome() {
   const inputTY = useRef(new Animated.Value(22)).current;
   const btnOp = useRef(new Animated.Value(0)).current;
   const btnTY = useRef(new Animated.Value(22)).current;
-
-  /* ── Phone store ── */
-  const phone = useOnboardingStore((s) => s.phone);
-  const setPhone = useOnboardingStore((s) => s.setPhone);
 
   /* ── Helper: ease-out cubic timing ── */
   const easeOut = (
@@ -361,19 +356,12 @@ export default function OnboardingWelcome() {
           <View className="flex-1">
 
             {/* ── Video layer (fades out cinematically) ── */}
-            <Animated.View style={[StyleSheet.absoluteFill, { opacity: videoOpacity }]}>
-              <Video
-                ref={(r) => { videoRef.current = r; }}
-                source={require("../../assets/video/video.mp4")}
-                resizeMode="cover"
-                shouldPlay
-                onPlaybackStatusUpdate={(s) => {
-                  if (!s?.isLoaded) return;
-                  if (s.didJustFinish || (s.positionMillis ?? 0) >= INTRO_MAX_MS) onVideoEnd();
-                }}
-                style={StyleSheet.absoluteFill}
-              />
-            </Animated.View>
+            <WelcomeVideoLayer
+              videoOpacity={videoOpacity}
+              videoRef={videoRef}
+              introMaxMs={INTRO_MAX_MS}
+              onVideoEnd={onVideoEnd}
+            />
 
             {/* ── Persistent dark vignette (over video, always) ── */}
             <LinearGradient
@@ -394,146 +382,47 @@ export default function OnboardingWelcome() {
 
             {/* ── Verse overlay (video + ending phases) ── */}
             {phase !== "form" && (
-              <Animated.View
-                className="absolute inset-0 items-center justify-center px-8"
-                style={{ opacity: overlayOp }}
-                pointerEvents="none"
-              >
-                <Animated.Text
-                  className="mb-[18px] text-center text-[10px] uppercase tracking-[4px]"
-                  style={{ opacity: labelOp, color: C.verseLabel, fontFamily: SERIF }}
-                >
-                  {VERSES[verseIdx % VERSES.length].label}
-                </Animated.Text>
-                <Animated.Text
-                  className="text-center text-[19px] italic leading-8 tracking-[0.4px]"
-                  style={{ opacity: verseTextOp, color: C.verseText, fontFamily: SERIF }}
-                >
-                  {typedText}
-                </Animated.Text>
-              </Animated.View>
+              <WelcomeVerseOverlay
+                overlayOp={overlayOp}
+                labelOp={labelOp}
+                verseTextOp={verseTextOp}
+                verseLabel={VERSES[verseIdx % VERSES.length].label}
+                typedText={typedText}
+                serif={SERIF}
+              />
             )}
 
 
             {/* ── Form phase content ── */}
             {phase === "form" && (
-              <Animated.View
-                style={[
-                  { position: "absolute", left: 24, right: 24, bottom: 0, paddingBottom: 52 },
-                  { opacity: formOp, transform: [{ translateY: formTY }] },
-                ]}
-              >
-                {/* ॐ accent */}
-                <Text
-                  className="mb-4 text-xs tracking-[3px]"
-                  style={{ color: C.goldOm, fontFamily: SERIF }}
-                >
-                  ॐ  dharma
-                </Text>
-
-                {/* Headline */}
-                <Animated.Text
-                  className="mb-[18px] text-4xl italic leading-[46px]"
-                  style={{
-                    opacity: headOp,
-                    transform: [{ translateY: headTY }],
-                    color: C.white90,
-                    fontFamily: SERIF,
-                  }}
-                >
-                  {typedHeadline}
-                </Animated.Text>
-
-                {/* Gold rule */}
-                <Animated.View
-                  className="mb-4 h-px w-8"
-                  style={{ opacity: headOp, backgroundColor: C.goldFaint }}
-                />
-
-                {/* Sub-text */}
-                <Animated.Text
-                  className="mb-8 text-[15px] italic leading-[25px]"
-                  style={{
-                    opacity: subOp,
-                    transform: [{ translateY: subTY }],
-                    color: C.white30,
-                    fontFamily: SERIF,
-                  }}
-                >
-                  {typedSubText}
-                </Animated.Text>
-
-                {/* Input */}
-                <Animated.View
-                  style={[
-                    { width: "100%" },
-                    { opacity: inputOp, transform: [{ translateY: inputTY }] },
-                  ]}
-                >
-                  <KeyboardAvoidingView
-                    behavior={Platform.OS === "ios" ? "padding" : undefined}
-                    keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-                  >
-                    <Text
-                      className="mb-[10px] text-[11px] uppercase tracking-[4px]"
-                      style={{ color: C.goldLabel, fontFamily: SANS, fontWeight: "400" }}
-                    >
-                      mobile number
-                    </Text>
-                    <PhoneInput value={phone} onChange={setPhone} />
-                    <Text
-                      className="mt-2 text-xs leading-[19px] tracking-[0.3px]"
-                      style={{ color: C.white18, fontFamily: SANS }}
-                    >
-                      for your daily dharmic sunrise message · no spam ever
-                    </Text>
-                  </KeyboardAvoidingView>
-                </Animated.View>
-
-                {/* Button */}
-                <Animated.View
-                  style={[
-                    { marginTop: 24 },
-                    { opacity: btnOp, transform: [{ translateY: btnTY }] },
-                  ]}
-                >
-                  <PrimaryGlowButton
-                    label="continue →"
-                    onPress={onContinue}
-                    disabled={phone.trim().length < 7}
-                    accessibilityLabel="Continue to details"
-                  />
-                  <Text
-                    className="mt-[18px] text-center text-[11px] leading-[18px] tracking-[0.4px]"
-                    style={{ color: C.privacy, fontFamily: SANS }}
-                  >
-                    ∴  your data is sacred · encrypted · never sold
-                  </Text>
-                </Animated.View>
-              </Animated.View>
+              <WelcomeForm
+                formOp={formOp}
+                formTY={formTY}
+                headOp={headOp}
+                headTY={headTY}
+                subOp={subOp}
+                subTY={subTY}
+                inputOp={inputOp}
+                inputTY={inputTY}
+                btnOp={btnOp}
+                btnTY={btnTY}
+                typedHeadline={typedHeadline}
+                typedSubText={typedSubText}
+                serif={SERIF}
+                sans={SANS}
+                onContinue={onContinue}
+              />
             )}
 
             {/* ── Skip (video phase only) ── */}
             {phase === "video" && (
-              <View
-                className="absolute left-0 right-0 top-0 z-20 flex-row justify-end px-5"
-                style={{ paddingTop: insets.top + 16 }}
-              >
-                <AnimatedPressable
-                  onPress={onVideoEnd}
-                  className="min-h-9 justify-center rounded-[20px] border border-onboardingWhite10 bg-onboardingWhite06 px-4 py-2"
-                  accessibilityLabel="Skip intro"
-                >
-                  <Text
-                    className="text-[11px] uppercase tracking-[4px]"
-                    style={{ color: C.white30, fontFamily: SANS }}
-                  >
-                    skip
-                  </Text>
-                </AnimatedPressable>
-              </View>
+              <WelcomeSkipButton
+                topInset={insets.top}
+                sans={SANS}
+                onPress={onVideoEnd}
+              />
             )}
-            
+
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>

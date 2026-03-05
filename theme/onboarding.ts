@@ -21,7 +21,7 @@ export const onboardingPalette = {
 } as const;
 
 export const onboardingTimings = {
-  INTRO_MAX_MS: 52000,
+  INTRO_MAX_MS: 20000,
   TYPE_SPEED_MS: 55,
   VERSE_HOLD_MS: 1400,
   VERSE_FADE_MS: 500,
@@ -40,19 +40,39 @@ export const onboardingFormCopy = {
 
 export const onboardingVerses = [
   {
-    label: "श्रीमद् भगवद् गीता · 2.47",
-    text: "कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।\nमा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥",
+    label: "reflection",
+    text: "when did you last\nfeel truly alive?",
   },
   {
-    label: "श्रीमद् भगवद् गीता · 6.5",
-    text: "उद्धरेदात्मनात्मानं नात्मानमवसादयेत्।\nआत्मैव ह्यात्मनो बन्धुरात्मैव रिपुरात्मनः॥",
+    label: "reflection",
+    text: "through the noise…",
   },
   {
-    label: "श्रीमद् भगवद् गीता · 2.20",
-    text: "न जायते म्रियते वा कदाचित्\nअजो नित्यः शाश्वतोऽयं पुराणो\nन हन्यते हन्यमाने शरीरे॥",
+    label: "reflection",
+    text: "through the scrolling…",
   },
   {
-    label: "श्रीमद् भगवद् गीता · 3.27",
-    text: "प्रकृतेः क्रियमाणानि गुणैः कर्माणि सर्वशः।\nअहंकारविमूढात्मा कर्ताहमिति मन्यते॥",
+    label: "reflection",
+    text: "what happened to\nyour dharma?",
+  },
+  {
+    label: "reflection",
+    text: "this is\nnot belief.",
+  },
+  {
+    label: "reflection",
+    text: "this is\nnot productivity.",
+  },
+  {
+    label: "reflection",
+    text: "this is\nnot random.",
+  },
+  {
+    label: "remembrance",
+    text: "remember who you are.",
+  },
+  {
+    label: "arrival",
+    text: "welcome to\nDharma.",
   },
 ] as const;
