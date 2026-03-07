@@ -1,5 +1,7 @@
 import { useOnboardingStore } from "@/store/useOnboardingStore";
 import { Platform, Text, View, ScrollView } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Audio } from "expo-av";
 import SacredInput from "../ScaredInput";
 import FloatingOm from "../FloatingOhm";
 import TextButton from "../TextButton";
@@ -12,14 +14,88 @@ type StepAgeProps = {
 };
 
 const SERIF = Platform.OS === "ios" ? "Georgia" : "serif";
+const HEADING_TEXT = "when did your\nsoul arrive?";
+const SUB_TEXT =
+  "your birth moment shaped a rhythm —\n" +
+  "the pattern your body and mind\n" +
+  "have been moving with ever since.";
 
 export default function StepAge({ onNext, onBack }: StepAgeProps) {
+  const typingSoundRef = useRef<Audio.Sound | null>(null);
+  const headingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const subTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [typedHeading, setTypedHeading] = useState("");
+  const [typedSubText, setTypedSubText] = useState("");
 
   const dob = useOnboardingStore((s) => s.dateOfBirth);
   const setDob = useOnboardingStore((s) => s.setDateOfBirth);
 
   const city = useOnboardingStore((s) => s.city);
   const setCity = useOnboardingStore((s) => s.setCity);
+
+  useEffect(() => {
+    let snd: Audio.Sound | null = null;
+    Audio.Sound.createAsync(
+      require("../../assets/sfx/mixkit-single-key-type-2533.wav"),
+      { volume: 0.25 },
+    )
+      .then(({ sound }) => {
+        snd = sound;
+        typingSoundRef.current = sound;
+      })
+      .catch(() => { });
+
+    return () => {
+      snd?.unloadAsync().catch(() => { });
+      typingSoundRef.current = null;
+    };
+  }, []);
+
+  const playTypeSound = useCallback(() => {
+    typingSoundRef.current?.replayAsync().catch(() => { });
+  }, []);
+
+  useEffect(() => {
+    let hIdx = 0;
+    let sIdx = 0;
+    setTypedHeading("");
+    setTypedSubText("");
+
+    headingTimerRef.current = setInterval(() => {
+      hIdx++;
+      setTypedHeading(HEADING_TEXT.slice(0, hIdx));
+      playTypeSound();
+
+      if (hIdx >= HEADING_TEXT.length) {
+        if (headingTimerRef.current) {
+          clearInterval(headingTimerRef.current);
+          headingTimerRef.current = null;
+        }
+
+        subTimerRef.current = setInterval(() => {
+          sIdx++;
+          setTypedSubText(SUB_TEXT.slice(0, sIdx));
+          playTypeSound();
+
+          if (sIdx >= SUB_TEXT.length && subTimerRef.current) {
+            clearInterval(subTimerRef.current);
+            subTimerRef.current = null;
+          }
+        }, 28);
+      }
+    }, 36);
+
+    return () => {
+      if (headingTimerRef.current) {
+        clearInterval(headingTimerRef.current);
+        headingTimerRef.current = null;
+      }
+      if (subTimerRef.current) {
+        clearInterval(subTimerRef.current);
+        subTimerRef.current = null;
+      }
+    };
+  }, [playTypeSound]);
 
   return (
     <View className="flex-1 px-6 justify-center">
@@ -43,15 +119,13 @@ export default function StepAge({ onNext, onBack }: StepAgeProps) {
             className="text-[34px] leading-[42px] mb-4 text-onboardingWhite90"
             style={{ fontFamily: SERIF }}
           >
-            when did your{"\n"}soul arrive?
+            {typedHeading}
           </Text>
 
           <Text
             className="text-[13px] leading-6 mb-12 text-onboardingWhite30"
           >
-            your birth moment shaped a rhythm —
-            the pattern your body and mind
-            have been moving with ever since.
+            {typedSubText}
           </Text>
 
           {/* DOB */}

@@ -18,7 +18,7 @@ export default function StepComplete() {
     setOnboardingUser({ name, phone });
 
     const t = setTimeout(() => {
-      router.replace("/(tabs)/mood");
+      router.replace("/(tabs)/home");
     }, 1200);
 
     return () => clearTimeout(t);

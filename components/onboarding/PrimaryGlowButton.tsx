@@ -16,22 +16,29 @@ export default function PrimaryGlowButton({
   disabled,
   footer,
 }: PrimaryGlowButtonProps) {
+  const isDisabled = Boolean(disabled);
+
   return (
     <View>
       <AnimatedPressable
         onPress={onPress}
-        disabled={disabled}
-        className={`rounded-2xl px-5 py-4 items-center justify-center border border-cyan-300/40 ${
-          disabled ? "bg-white/5" : "bg-cyan-400/20"
-        }`}
+        disabled={isDisabled}
+        className="rounded-2xl px-5 py-4 items-center justify-center border"
+        style={{
+          backgroundColor: isDisabled ? colors.disabledCard : colors.primary,
+          borderColor: isDisabled ? colors.disabledBorder : colors.primarySoft,
+        }}
         containerStyle={{
-          shadowColor: colors.primary,
-          shadowOpacity: disabled ? 0.1 : 0.3,
+          shadowColor: colors.glow,
+          shadowOpacity: isDisabled ? 0.1 : 0.3,
           shadowRadius: 18,
           shadowOffset: { width: 0, height: 0 },
         }}
       >
-        <Text className="text-cyan-100 text-base font-semibold tracking-wide">
+        <Text
+          className="text-base font-semibold tracking-wide"
+          style={{ color: isDisabled ? colors.textDisabled : colors.backgroundDeep }}
+        >
           {label}
         </Text>
       </AnimatedPressable>

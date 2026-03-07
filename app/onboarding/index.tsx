@@ -19,12 +19,14 @@ import WelcomeVideoLayer from "@/components/onboarding/welcome/WelcomeVideoLayer
 import WelcomeVerseOverlay from "@/components/onboarding/welcome/WelcomeVerseOverlay";
 import WelcomeForm from "@/components/onboarding/welcome/WelcomeForm";
 import WelcomeSkipButton from "@/components/onboarding/welcome/WelcomeSkipButton";
+import StartupLoader from "@/components/StartupLoader";
 import {
   onboardingFormCopy,
   onboardingPalette as C,
   onboardingTimings,
   onboardingVerses as VERSES,
 } from "@/theme/onboarding";
+import GradientBackground from "@/components/GradientBackground";
 
 const {
   INTRO_MAX_MS,
@@ -50,12 +52,19 @@ export default function OnboardingWelcome() {
   const volTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const typingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const holdRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const introEndTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const formStartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const blackFadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const formHeadlineTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const formSubTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const formPauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasEnded = useRef(false);
 
   /* ── State ── */
   const [phase, setPhase] = useState<Phase>("video");
   const [verseIdx, setVerseIdx] = useState(0);
   const [typedText, setTypedText] = useState("");
+  const [isVideoReady, setIsVideoReady] = useState(false);
 
   const [typedHeadline, setTypedHeadline] = useState("");
   const [typedSubText, setTypedSubText] = useState("");
@@ -133,36 +142,60 @@ export default function OnboardingWelcome() {
       }
     }, 60); // smoother interval
   }, []);
+
+  const stopFormTyping = useCallback(() => {
+    if (formHeadlineTimerRef.current) {
+      clearInterval(formHeadlineTimerRef.current);
+      formHeadlineTimerRef.current = null;
+    }
+    if (formSubTimerRef.current) {
+      clearInterval(formSubTimerRef.current);
+      formSubTimerRef.current = null;
+    }
+    if (formPauseTimerRef.current) {
+      clearTimeout(formPauseTimerRef.current);
+      formPauseTimerRef.current = null;
+    }
+  }, []);
+
   /* ── Stop typing timers ── */
   const stopTyping = useCallback(() => {
     if (typingRef.current) { clearInterval(typingRef.current); typingRef.current = null; }
     if (holdRef.current) { clearTimeout(holdRef.current); holdRef.current = null; }
+    typingSoundRef.current?.stopAsync().catch(() => { });
+  }, []);
+
+  const stopVideo = useCallback(() => {
+    videoRef.current?.stopAsync().catch(() => { });
+  }, []);
+
+  const pulseTypeHaptic = useCallback(() => {
+    Haptics.selectionAsync().catch(() => { });
   }, []);
 
   /* ── Type a verse then schedule next ── */
   const startVerse = useCallback(
     (idx: number) => {
       stopTyping();
-      const verse = VERSES[idx % VERSES.length];
+      const lastVerseIndex = VERSES.length - 1;
+      const currentIndex = Math.min(idx, lastVerseIndex);
+      const verse = VERSES[currentIndex];
       setTypedText("");
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => { });
 
       let charIdx = 0;
 
       typingRef.current = setInterval(() => {
         charIdx++;
         setTypedText(verse.text.slice(0, charIdx));
+        pulseTypeHaptic();
 
-        // 🔊 Play typing sound correctly
-        if (typingSoundRef.current) {
+        // Avoid expensive per-character audio calls while keeping typing feel.
+        if (typingSoundRef.current && charIdx % 3 === 0) {
           typingSoundRef.current
             .replayAsync()
             .catch(() => { });
         }
-
-        // Optional haptic (safe)
-        Haptics.impactAsync(
-          Haptics.ImpactFeedbackStyle.Light
-        ).catch(() => { });
 
         if (charIdx >= verse.text.length) {
           clearInterval(typingRef.current!);
@@ -173,19 +206,23 @@ export default function OnboardingWelcome() {
               Haptics.ImpactFeedbackStyle.Medium
             ).catch(() => { });
 
+            if (currentIndex >= lastVerseIndex) return;
+
             easeIn(verseTextOp, 0, VERSE_FADE_MS).start(() => {
               setVerseIdx((prev) => {
                 easeOut(verseTextOp, 1, VERSE_FADE_MS).start();
-                return (prev + 1) % VERSES.length;
+                return Math.min(prev + 1, lastVerseIndex);
               });
             });
           }, VERSE_HOLD_MS);
         }
       }, TYPE_SPEED_MS);
     },
-    [stopTyping, verseTextOp]
+    [pulseTypeHaptic, stopTyping, verseTextOp]
   );
   const typeFormText = useCallback(() => {
+    stopFormTyping();
+
     const { headline, sub } = onboardingFormCopy;
 
     let hIndex = 0;
@@ -194,33 +231,42 @@ export default function OnboardingWelcome() {
     setTypedHeadline("");
     setTypedSubText("");
 
-    const headlineTimer = setInterval(() => {
+    formHeadlineTimerRef.current = setInterval(() => {
       hIndex++;
       setTypedHeadline(headline.slice(0, hIndex));
+      typingSoundRef.current?.replayAsync().catch(() => { });
 
       if (hIndex >= headline.length) {
-        clearInterval(headlineTimer);
+        if (formHeadlineTimerRef.current) {
+          clearInterval(formHeadlineTimerRef.current);
+          formHeadlineTimerRef.current = null;
+        }
 
         // Small pause before sub text starts
-        setTimeout(() => {
-          const subTimer = setInterval(() => {
+        formPauseTimerRef.current = setTimeout(() => {
+          formSubTimerRef.current = setInterval(() => {
             sIndex++;
             setTypedSubText(sub.slice(0, sIndex));
+            typingSoundRef.current?.replayAsync().catch(() => { });
 
             if (sIndex >= sub.length) {
-              clearInterval(subTimer);
+              if (formSubTimerRef.current) {
+                clearInterval(formSubTimerRef.current);
+                formSubTimerRef.current = null;
+              }
             }
           }, 28);
         }, 250);
       }
     }, 35);
-  }, []);
+  }, [stopFormTyping]);
 
   /* Restart verse when index changes (and still in video phase) */
   useEffect(() => {
+    if (!isVideoReady) return;
     if (phase === "video") startVerse(verseIdx);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [verseIdx, phase]);
+  }, [verseIdx, phase, isVideoReady]);
 
   /* ── THE CINEMATIC END SEQUENCE ──────────────────────────────
      Timeline (all durations approximate, overlapping):
@@ -239,6 +285,10 @@ export default function OnboardingWelcome() {
   const onVideoEnd = useCallback(() => {
     if (hasEnded.current) return;
     hasEnded.current = true;
+    if (introEndTimerRef.current) {
+      clearTimeout(introEndTimerRef.current);
+      introEndTimerRef.current = null;
+    }
 
     setPhase("ending");
     stopTyping();
@@ -260,10 +310,10 @@ export default function OnboardingWelcome() {
     ]).start(() => {
 
       // ✅ STOP VIDEO AFTER fade completes
-      videoRef.current?.stopAsync().catch(() => { });
+      stopVideo();
 
       setPhase("form");
-      setTimeout(() => {
+      formStartTimerRef.current = setTimeout(() => {
         typeFormText();
       }, FORM_EASE_DELAY + 200);
       easeOut(stripOp, 1, 1200).start();
@@ -293,11 +343,53 @@ export default function OnboardingWelcome() {
       ]).start();
 
       // Fade black layer away gently
-      setTimeout(() => {
+      blackFadeTimerRef.current = setTimeout(() => {
         easeIn(blackFade, 0, 1000).start();
       }, FORM_EASE_DELAY + 120);
     });
-  }, [stopTyping, fadeVolume]);
+  }, [
+    blackFade,
+    btnOp,
+    btnTY,
+    fadeVolume,
+    formOp,
+    formTY,
+    headOp,
+    headTY,
+    inputOp,
+    inputTY,
+    labelOp,
+    overlayOp,
+    stopTyping,
+    stopVideo,
+    stripOp,
+    subOp,
+    subTY,
+    typeFormText,
+    verseTextOp,
+    videoOpacity,
+  ]);
+
+  useEffect(() => {
+    if (!isVideoReady) return;
+    introEndTimerRef.current = setTimeout(() => {
+      onVideoEnd();
+    }, INTRO_MAX_MS);
+
+    return () => {
+      if (introEndTimerRef.current) {
+        clearTimeout(introEndTimerRef.current);
+        introEndTimerRef.current = null;
+      }
+    };
+  }, [onVideoEnd, isVideoReady]);
+
+  // Fail-safe: avoid getting stuck forever if the device takes too long to report video readiness.
+  useEffect(() => {
+    if (isVideoReady) return;
+    const timer = setTimeout(() => setIsVideoReady(true), 7000);
+    return () => clearTimeout(timer);
+  }, [isVideoReady]);
 
   /* ── Audio mode ── */
   useEffect(() => {
@@ -331,22 +423,26 @@ export default function OnboardingWelcome() {
   useEffect(() => {
     return () => {
       stopTyping();
+      stopFormTyping();
+      if (introEndTimerRef.current) clearTimeout(introEndTimerRef.current);
+      if (formStartTimerRef.current) clearTimeout(formStartTimerRef.current);
+      if (blackFadeTimerRef.current) clearTimeout(blackFadeTimerRef.current);
       if (volTimerRef.current) clearInterval(volTimerRef.current);
       typingSoundRef.current?.unloadAsync().catch(() => { });
-      videoRef.current?.stopAsync().catch(() => { });
+      stopVideo();
     };
-  }, [stopTyping]);
+  }, [stopTyping, stopFormTyping, stopVideo]);
 
   /* ── Continue ── */
   const onContinue = async () => {
     try { await typingSoundRef.current?.stopAsync(); await typingSoundRef.current?.unloadAsync(); } catch { }
-    try { await videoRef.current?.stopAsync(); } catch { }
+    try { await stopVideo(); } catch { }
     router.replace("/onboarding/details");
   };
 
   /* ─────────────────────── RENDER ─────────────────────────── */
   return (
-    <CosmicBackground>
+    <GradientBackground>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -361,6 +457,7 @@ export default function OnboardingWelcome() {
               videoRef={videoRef}
               introMaxMs={INTRO_MAX_MS}
               onVideoEnd={onVideoEnd}
+              onVideoReady={() => setIsVideoReady(true)}
             />
 
             {/* ── Persistent dark vignette (over video, always) ── */}
@@ -386,7 +483,7 @@ export default function OnboardingWelcome() {
                 overlayOp={overlayOp}
                 labelOp={labelOp}
                 verseTextOp={verseTextOp}
-                verseLabel={VERSES[verseIdx % VERSES.length].label}
+                verseLabel={VERSES[Math.min(verseIdx, VERSES.length - 1)].label}
                 typedText={typedText}
                 serif={SERIF}
               />
@@ -423,10 +520,19 @@ export default function OnboardingWelcome() {
               />
             )}
 
+            {!isVideoReady && (
+              <View style={[StyleSheet.absoluteFill, { zIndex: 30 }]}>
+                <StartupLoader
+                  message="Starting mydharma..."
+                  subMessage="Loading welcome experience"
+                />
+              </View>
+            )}
+
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
-    </CosmicBackground>
+    </GradientBackground>
   );
 }
 /* ─── Styles ──────────────────────────────────────────────────── */

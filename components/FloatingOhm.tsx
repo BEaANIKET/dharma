@@ -65,8 +65,8 @@ export default function FloatingOm({
       className=" z-0"
       style={{
         transform: [
-          { translateY: floatAnim },
-          { scale: scaleAnim },
+          // { translateY: floatAnim },
+          // { scale: scaleAnim },
         ],
       }}
     >

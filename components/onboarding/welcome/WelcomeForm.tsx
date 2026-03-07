@@ -116,7 +116,7 @@ export default function WelcomeForm({
           disabled={phone.trim().length < 7}
         />
         <Text
-          className="mt-[18px] text-center text-[11px] leading-[18px] tracking-[0.4px]"
+          className="mt-4xl text-center text-[11px] leading-[18px] tracking-[0.4px]"
           style={{ color: C.privacy, fontFamily: sans }}
         >
           ∴  your data is sacred · encrypted · never sold

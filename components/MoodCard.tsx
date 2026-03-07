@@ -16,41 +16,29 @@ export default function MoodCard({
   label,
   isSelected = false,
   accentColor = colors.primary,
-  softColor = colors.card,
-  borderColor = colors.primary,
+  softColor = colors.backgroundSoft,
+  borderColor = colors.primarySoft,
   onPress,
 }: MoodCardProps) {
-
   return (
     <Pressable
       onPress={onPress}
-      className="w-[23%] rounded-2xl px-2 py-4 items-center border mb-4"
+      className="mb-3 h-[104px] w-[31.7%] items-center justify-center rounded-3xl border"
       style={{
-        backgroundColor: isSelected
-          ? softColor
-          : colors.card,
-        borderColor: isSelected
-          ? borderColor
-          : colors.moodBorderMuted,
+        backgroundColor: true ? softColor : colors.backgroundSoft,
+        borderColor: isSelected ? borderColor : colors.cardBorder,
       }}
     >
-      <Text className="text-3xl">{emoji}</Text>
+      <Text className="text-[33px]">{emoji}</Text>
       <Text
-        className={`mt-2 text-center text-xs ${isSelected ? "font-semibold" : "text-textSecondary"}`}
-        style={isSelected ? { color: accentColor } : undefined}
+        className="mt-2 text-center text-[18px]"
+        style={{
+          color: isSelected ? accentColor : colors.textSecondary,
+          fontWeight: isSelected ? "700" : "500",
+        }}
       >
         {label}
       </Text>
-      {/* {isSelected ? (
-        <View
-          className="mt-3 px-2 py-1 rounded-full"
-          style={{ backgroundColor: `${accentColor}30` }}
-        >
-          <Text className="text-xs" style={{ color: accentColor }}>
-            Selected
-          </Text>
-        </View>
-      ) : null} */}
     </Pressable>
   );
 }

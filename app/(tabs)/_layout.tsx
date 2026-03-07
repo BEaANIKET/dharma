@@ -1,45 +1,115 @@
 import { Tabs } from "expo-router";
-import { Text } from "react-native";
+import { View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import FloatingOm from "@/components/FloatingOhm";
+import { colors } from "@/theme/colors";
 
 export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
-        tabBarStyle: {
-          backgroundColor: "#0B1020",
-          borderTopWidth: 0,
+        headerShown: true,
+        headerTitleAlign: "left",
+        headerStyle: {
+          backgroundColor: colors.background,
         },
-        tabBarActiveTintColor: "#2DD4BF",
-        tabBarInactiveTintColor: "#94A3B8",
+        headerTitle: () => (
+          <View style={{ marginTop: 4 }}>
+            <FloatingOm size={20} opacity={1} />
+          </View>
+        ),
+        tabBarStyle: {
+          backgroundColor: colors.backgroundDeep,
+          borderTopWidth: 0,
+          height: 78,
+          paddingTop: 8,
+          paddingBottom: 10,
+          paddingHorizontal: 14,
+        },
+        tabBarLabelStyle: {
+          fontSize: 13,
+          marginTop: 2,
+        },
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
       }}
     >
       <Tabs.Screen
-        name="mood"
+        name="home"
         options={{
-          title: "Mood",
-          tabBarIcon: () => <Text>✨</Text>,
+          title: "Home",
+          tabBarIcon: ({ focused, color, size }) => (
+            <View
+              style={{
+                width: 38,
+                height: 38,
+                borderRadius: 12,
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: focused ? colors.primarySurface : "transparent",
+              }}
+            >
+              <Ionicons
+                name={focused ? "home" : "home-outline"}
+                size={size}
+                color={color}
+              />
+            </View>
+          ),
         }}
       />
       <Tabs.Screen
-        name="practices"
+        name="explore"
         options={{
-          title: "Practice",
-          tabBarIcon: () => <Text>🧘</Text>,
+          title: "Explore",
+          tabBarIcon: ({ focused, color, size }) => (
+            <View
+              style={{
+                width: 38,
+                height: 38,
+                borderRadius: 12,
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: focused ? colors.primarySurface : "transparent",
+              }}
+            >
+              <Ionicons
+                name={focused ? "compass" : "compass-outline"}
+                size={size}
+                color={color}
+              />
+            </View>
+          ),
         }}
       />
       <Tabs.Screen
         name="cosmic"
         options={{
-          title: "Cosmic",
-          tabBarIcon: () => <Text>🌙</Text>,
+          href: null,
         }}
       />
       <Tabs.Screen
-        name="story"
+        name="profile"
         options={{
-          title: "Story",
-          tabBarIcon: () => <Text>📖</Text>,
+          title: "Profile",
+          tabBarIcon: ({ focused, color, size }) => (
+            <View
+              style={{
+                width: 38,
+                height: 38,
+                borderRadius: 12,
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: focused ? colors.primarySurface : "transparent",
+              }}
+            >
+              <Ionicons
+                name={focused ? "person" : "person-outline"}
+                size={size}
+                color={color}
+              />
+            </View>
+          ),
         }}
       />
     </Tabs>

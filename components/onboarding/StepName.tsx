@@ -4,6 +4,8 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Audio } from "expo-av";
 import SacredInput from "../ScaredInput";
 import PrimaryGlowButton from "./PrimaryGlowButton";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
@@ -19,6 +21,10 @@ type StepNameProps = {
 };
 
 export default function StepName({ onNext }: StepNameProps) {
+  const headingText = "what shall the\ncosmos call you?";
+  const typingSoundRef = useRef<Audio.Sound | null>(null);
+  const headingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [typedHeading, setTypedHeading] = useState("");
   const name = useOnboardingStore((s) => s.name);
   const setName = useOnboardingStore((s) => s.setName);
 
@@ -29,6 +35,59 @@ export default function StepName({ onNext }: StepNameProps) {
     name.trim().length > 1 &&
     email.trim().length > 4 &&
     email.includes("@");
+
+  useEffect(() => {
+    let snd: Audio.Sound | null = null;
+    Audio.Sound.createAsync(
+      require("../../assets/sfx/mixkit-single-key-type-2533.wav"),
+      { volume: 0.25 },
+    )
+      .then(({ sound }) => {
+        snd = sound;
+        typingSoundRef.current = sound;
+      })
+      .catch(() => { });
+
+    return () => {
+      snd?.unloadAsync().catch(() => { });
+      typingSoundRef.current = null;
+    };
+  }, []);
+
+  const playTypeSound = useCallback(() => {
+    typingSoundRef.current?.replayAsync().catch(() => { });
+  }, []);
+
+  useEffect(() => {
+    let idx = 0;
+    setTypedHeading("");
+
+    headingTimerRef.current = setInterval(() => {
+      idx++;
+      setTypedHeading(headingText.slice(0, idx));
+      playTypeSound();
+
+      if (idx >= headingText.length && headingTimerRef.current) {
+        clearInterval(headingTimerRef.current);
+        headingTimerRef.current = null;
+      }
+    }, 38);
+
+    return () => {
+      if (headingTimerRef.current) {
+        clearInterval(headingTimerRef.current);
+        headingTimerRef.current = null;
+      }
+    };
+  }, [headingText, playTypeSound]);
+
+  const onNameChange = useCallback((value: string) => {
+    setName(value);
+  }, [playTypeSound, setName]);
+
+  const onEmailChange = useCallback((value: string) => {
+    setEmail(value);
+  }, [playTypeSound, setEmail]);
 
   return (
     <View className="flex-1 px-6 justify-center">
@@ -68,7 +127,7 @@ export default function StepName({ onNext }: StepNameProps) {
             className="text-[34px] leading-[42px] mb-12 text-onboardingWhite90"
             style={{ fontFamily: SERIF }}
           >
-            what shall the{"\n"}cosmos call you?
+            {typedHeading}
           </Text>
 
           {/* Name */}
@@ -76,7 +135,7 @@ export default function StepName({ onNext }: StepNameProps) {
             <SacredInput
               label="your name"
               value={name}
-              onChangeText={setName}
+              onChangeText={onNameChange}
               placeholder="Full name"
               placeholderTextColor={colors.onboardingWhite18}
               labelColor={colors.onboardingGoldLabel}
@@ -92,7 +151,7 @@ export default function StepName({ onNext }: StepNameProps) {
             <SacredInput
               label="your email"
               value={email}
-              onChangeText={setEmail}
+              onChangeText={onEmailChange}
               placeholder="you@example.com"
               keyboardType="email-address"
               autoCapitalize="none"
