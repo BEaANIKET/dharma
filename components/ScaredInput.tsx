@@ -6,12 +6,14 @@ import {
   TextInput,
   TextInputProps,
   View,
-  Platform,
 } from "react-native";
+import { typography } from "@/theme/typography";
 
 interface SacredInputProps extends TextInputProps {
   label?: string;
   error?: string;
+  prefixText?: string;
+  prefixColor?: string;
 
   /* Color overrides (for onboarding or default theme) */
   labelColor?: string;
@@ -22,12 +24,11 @@ interface SacredInputProps extends TextInputProps {
   errorColor?: string;
 }
 
-const SERIF = Platform.OS === "ios" ? "Georgia" : "serif";
-const SANS = Platform.OS === "ios" ? "Helvetica Neue" : "sans-serif";
-
 export default function SacredInput({
   label,
   error,
+  prefixText,
+  prefixColor,
   labelColor,
   activeLabelColor,
   textColor,
@@ -72,7 +73,7 @@ export default function SacredInput({
         <Text
           className="mb-2 text-[11px] uppercase tracking-[4px]"
           style={{
-            fontFamily: SANS,
+            ...typography.label,
             color: focused
               ? activeLabelColor ?? underlineColor
               : labelColor,
@@ -82,19 +83,33 @@ export default function SacredInput({
         </Text>
       )}
 
-      <TextInput
-        {...props}
-        className="text-[18px] py-2"
-        style={[
-          {
-            fontFamily: SERIF,
-            color: textColor,
-          },
-          style,
-        ]}
-        onFocus={onFocus}
-        onBlur={onBlur}
-      />
+      <View className="flex-row items-center">
+        {prefixText ? (
+          <Text
+            className="mr-2 text-[18px]"
+            style={{
+              ...typography.body,
+              color: prefixColor ?? textColor,
+            }}
+          >
+            {prefixText}
+          </Text>
+        ) : null}
+
+        <TextInput
+          {...props}
+          className="flex-1 text-[18px] py-2"
+          style={[
+            {
+              ...typography.body,
+              color: textColor,
+            },
+            style,
+          ]}
+          onFocus={onFocus}
+          onBlur={onBlur}
+        />
+      </View>
 
       {/* Base underline */}
       <View
@@ -115,7 +130,7 @@ export default function SacredInput({
       {error && (
         <Text
           className="mt-2 text-xs"
-          style={{ color: errorColor, fontFamily: SANS }}
+          style={{ color: errorColor, ...typography.label }}
         >
           {error}
         </Text>

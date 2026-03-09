@@ -1,5 +1,5 @@
 import { useOnboardingStore } from "@/store/useOnboardingStore";
-import { Platform, Text, View, ScrollView } from "react-native";
+import { Text, View, ScrollView } from "react-native";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
 import SacredInput from "../ScaredInput";
@@ -7,13 +7,13 @@ import FloatingOm from "../FloatingOhm";
 import TextButton from "../TextButton";
 import { colors } from "@/theme/colors";
 import SacredDateInput from "../SacredDateInput";
+import { typography } from "@/theme/typography";
 
 type StepAgeProps = {
   onNext: () => void;
   onBack: () => void;
 };
 
-const SERIF = Platform.OS === "ios" ? "Georgia" : "serif";
 const HEADING_TEXT = "when did your\nsoul arrive?";
 const SUB_TEXT =
   "your birth moment shaped a rhythm —\n" +
@@ -112,18 +112,19 @@ export default function StepAge({ onNext, onBack }: StepAgeProps) {
         automaticallyAdjustKeyboardInsets
         showsVerticalScrollIndicator={false}
       >
-        <View className="flex-1 justify-center pt-24 pb-24">
+        <View className="flex-1 justify-center ">
 
           {/* Heading */}
           <Text
             className="text-[34px] leading-[42px] mb-4 text-onboardingWhite90"
-            style={{ fontFamily: SERIF }}
+            style={typography.heading}
           >
             {typedHeading}
           </Text>
 
           <Text
             className="text-[13px] leading-6 mb-12 text-onboardingWhite30"
+            style={typography.body}
           >
             {typedSubText}
           </Text>

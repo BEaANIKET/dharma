@@ -1,5 +1,6 @@
-import { Pressable, Text, Platform } from "react-native";
+import { Pressable, Text } from "react-native";
 import { colors } from "@/theme/colors";
+import { typography } from "@/theme/typography";
 
 type TextButtonProps = {
   label: string;
@@ -8,9 +9,6 @@ type TextButtonProps = {
   disabled?: boolean;
   className?: string;
 };
-
-const SERIF_ITALIC =
-  Platform.OS === "ios" ? "Georgia-Italic" : "serif";
 
 export default function TextButton({
   label,
@@ -34,7 +32,7 @@ export default function TextButton({
       <Text
         className="text-[17px] tracking-wide"
         style={{
-          fontFamily: SERIF_ITALIC,
+          ...typography.quote,
           fontStyle: "italic",
           color: !disabled
             ? colors.primary

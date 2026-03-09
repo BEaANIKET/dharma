@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Ionicons } from "@expo/vector-icons";
+import { typography } from "@/theme/typography";
 
 interface SacredDateInputProps {
   label?: string;
@@ -21,9 +22,6 @@ interface SacredDateInputProps {
   underlineColor?: string;
   underlineBaseColor?: string;
 }
-
-const SERIF = Platform.OS === "ios" ? "Georgia" : "serif";
-const SANS = Platform.OS === "ios" ? "Helvetica Neue" : "sans-serif";
 
 export default function SacredDateInput({
   label,
@@ -85,7 +83,7 @@ export default function SacredDateInput({
         <Text
           className="mb-2 text-[11px] uppercase tracking-[4px]"
           style={{
-            fontFamily: SANS,
+            ...typography.label,
             color: focused
               ? activeLabelColor ?? underlineColor
               : labelColor,
@@ -102,7 +100,7 @@ export default function SacredDateInput({
       >
         <Text
           style={{
-            fontFamily: SERIF,
+            ...typography.body,
             fontSize: 18,
             color: textColor,
           }}

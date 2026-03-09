@@ -1,103 +1,153 @@
-import { useState } from "react";
-import { Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
 import GradientBackground from "@/components/GradientBackground";
-import MoodCard from "@/components/MoodCard";
+import HomeContentPhase from "@/components/home/HomeContentPhase";
+import HomeLoadingPhase from "@/components/home/HomeLoadingPhase";
+import HomeMoodSelection from "@/components/home/HomeMoodSelection";
+import { MainType, MOOD_OPTIONS, MoodLabel, resolveRecipeForMood, ThumbDirection } from "@/components/home/data";
+import { friendlyMessage, recipeApi, RecipeApiResponse } from "@/services/api";
 import { useMoodStore } from "@/store/useMoodStore";
-import { colors } from "@/theme/colors";
-import NotSureButton from "@/components/NotSureButton";
 
-const SERIF = Platform.OS === "ios" ? "Georgia" : "serif";
-const MOOD_OPTIONS = [
-  { label: "Anxious", emoji: "😰", accent: "#D4943A", text: colors.backgroundDeep },
-  { label: "Lost", emoji: "😔", accent: "#8B8FA3", text: colors.backgroundDeep },
-  { label: "Angry", emoji: "😤", accent: "#E35D5D", text: colors.backgroundDeep },
-  { label: "Numb", emoji: "😶", accent: "#8C8AA0", text: colors.backgroundDeep },
-  { label: "Overthinking", emoji: "🌀", accent: "#5A8DEE", text: colors.backgroundDeep },
-  { label: "Heartbroken", emoji: "💔", accent: "#C56A8F", text: colors.backgroundDeep },
-];
+type HomePhase = "selection" | "loading" | "content";
+
+function isMoodLabel(value: string | null): value is MoodLabel {
+  return MOOD_OPTIONS.some((mood) => mood.label === value);
+}
 
 export default function MoodScreen() {
   const selectedMood = useMoodStore((state) => state.selectedMood);
   const setMood = useMoodStore((state) => state.setMood);
   const insets = useSafeAreaInsets();
+
+  const [phase, setPhase] = useState<HomePhase>("selection");
   const [context, setContext] = useState("");
-  const selectedTheme = MOOD_OPTIONS.find((mood) => mood.label === selectedMood);
+  const [mainType, setMainType] = useState<MainType>("verse");
+  const [breathingActive, setBreathingActive] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [thumbs, setThumbs] = useState<Record<string, ThumbDirection | null>>({});
+  const [recipeResponse, setRecipeResponse] = useState<RecipeApiResponse | null>(null);
+  const [recipeError, setRecipeError] = useState<string | null>(null);
+
+  const loadingTimerRef = useRef<ReturnType<typeof globalThis.setTimeout> | null>(null);
+  const scrollRef = useRef<ScrollView | null>(null);
+
+  const moodLabel = isMoodLabel(selectedMood) ? selectedMood : null;
+  const moodEmoji = moodLabel ? MOOD_OPTIONS.find((mood) => mood.label === moodLabel)?.emoji ?? "🕉️" : "🕉️";
+  const resolvedRecipe = useMemo(() => resolveRecipeForMood(recipeResponse), [recipeResponse]);
+
+  const clearTimers = () => {
+    if (loadingTimerRef.current) {
+      clearTimeout(loadingTimerRef.current);
+      loadingTimerRef.current = null;
+    }
+  };
+
+  const submitMood = async () => {
+    if (!moodLabel) {
+      return;
+    }
+    clearTimers();
+    setMainType(Math.random() > 0.45 ? "verse" : "breathing");
+    setBreathingActive(false);
+    setIsPlaying(false);
+    setRecipeError(null);
+    setRecipeResponse(null);
+    setPhase("loading");
+
+    const loadingDelay = new Promise<void>((resolve) => {
+      loadingTimerRef.current = globalThis.setTimeout(() => resolve(), 2100);
+    });
+
+    try {
+      const [response] = await Promise.all([
+        recipeApi.getRecipe({
+          mood: moodLabel.toLowerCase(),
+          feelings: context.trim(),
+        }),
+        loadingDelay,
+      ]);
+      setRecipeResponse(response);
+      if (!resolveRecipeForMood(response)) {
+        console.log("[Home] Incomplete /recipe payload", {
+          mood: moodLabel,
+          context: context.trim(),
+          response,
+        });
+        setRecipeError("Recipe response is incomplete. Please retry.");
+      }
+    } catch (error) {
+      console.log("[Home] /recipe request failed", {
+        mood: moodLabel,
+        context: context.trim(),
+        error,
+      });
+      setRecipeError(friendlyMessage(error));
+      await loadingDelay;
+    }
+
+    setPhase("content");
+  };
+
+  const resetFlow = () => {
+    clearTimers();
+    setMood(null);
+    setContext("");
+    setPhase("selection");
+    setBreathingActive(false);
+    setIsPlaying(false);
+    setThumbs({});
+    setRecipeResponse(null);
+    setRecipeError(null);
+  };
+
+  const handleThumb = (id: string, direction: ThumbDirection) => {
+    setThumbs((prev) => ({ ...prev, [id]: prev[id] === direction ? null : direction }));
+  };
+
+  useEffect(() => {
+    return () => clearTimers();
+  }, []);
 
   return (
     <GradientBackground>
       <ScrollView
+        ref={scrollRef}
         className="flex-1 px-5"
         contentContainerStyle={{ paddingTop: insets.top + 14, paddingBottom: insets.bottom + 30 }}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
       >
-        <Text
-          className="text-5xl leading-[56px]"
-          style={{ color: colors.onboardingWhite90, fontFamily: SERIF }}
-        >
-          What&apos;s weighing{"\n"}on you?
-        </Text>
-        <Text className="mt-2 text-xl text-textSecondary">
-          Tap one. We&apos;ll handle the rest.
-        </Text>
-
-        <View className="mt-9 flex-row flex-wrap justify-between">
-          {MOOD_OPTIONS.map((mood) => (
-            <MoodCard
-              key={mood.label}
-              emoji={mood.emoji}
-              label={mood.label}
-              isSelected={selectedMood === mood.label}
-              accentColor={colors.primary}
-              // softColor={colors.primarySurface}
-              borderColor={colors.primarySoft}
-              onPress={() => setMood(mood.label)}
-            />
-          ))}
-        </View>
-
-        <NotSureButton />
-
-        <View
-          className="mt-5 flex-row items-center rounded-2xl border px-4"
-          style={{
-            backgroundColor: colors.backgroundSoft,
-            borderColor: colors.cardBorder,
-          }}
-        >
-          <TextInput
-            value={context}
-            onChangeText={setContext}
-            placeholder="Or tell us more... (optional)"
-            placeholderTextColor={colors.textSecondary}
-            className="h-14 flex-1 text-xl"
-            style={{ color: colors.textPrimary }}
+        {phase === "selection" ? (
+          <HomeMoodSelection
+            selectedMood={moodLabel}
+            context={context}
+            onChangeContext={setContext}
+            onSelectMood={setMood}
+            onSubmit={submitMood}
           />
-          <Pressable
-            className="h-11 w-11 items-center justify-center rounded-2xl"
-            style={{ backgroundColor: colors.primary }}
-          >
-            <Ionicons name="paper-plane-outline" size={20} color={colors.backgroundDeep} />
-          </Pressable>
-        </View>
+        ) : null}
 
-        {selectedMood ? (
-          <Pressable
-            onPress={() => router.push("/loading")}
-            className="mt-7 self-center rounded-2xl px-9 py-4"
-            style={{ backgroundColor: selectedTheme?.accent ?? colors.primary }}
-          >
-            <Text
-              className="text-2xl font-semibold"
-              style={{ color: selectedTheme?.text ?? colors.backgroundDeep }}
-            >
-              Find my ground {"\u2192"}
-            </Text>
-          </Pressable>
+        {phase === "loading" ? <HomeLoadingPhase moodEmoji={moodEmoji} /> : null}
+
+        {phase === "content" && moodLabel ? (
+          <HomeContentPhase
+            moodLabel={moodLabel}
+            context={context}
+            mainType={mainType}
+            recipe={resolvedRecipe}
+            recipeError={recipeError}
+            onRetryRecipe={submitMood}
+            onRequestScrollTo={(y) => scrollRef.current?.scrollTo({ y, animated: true })}
+            isPlaying={isPlaying}
+            breathingActive={breathingActive}
+            thumbs={thumbs}
+            onReset={resetFlow}
+            onTogglePlay={() => setIsPlaying((prev) => !prev)}
+            onToggleBreathing={() => setBreathingActive((prev) => !prev)}
+            onThumb={handleThumb}
+          />
         ) : null}
       </ScrollView>
     </GradientBackground>

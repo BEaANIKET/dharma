@@ -4,6 +4,8 @@ import { router } from "expo-router";
 import GradientBackground from "@/components/GradientBackground";
 import { useMoodStore } from "@/store/useMoodStore";
 import { moodMap } from "@/constants/moodThemes";
+import { colors } from "@/theme/tokens";
+import { typography } from "@/theme/typography";
 
 const LOADING_STEPS = [
   "Consulting all 700 Gita verses...",
@@ -67,7 +69,7 @@ export default function Loading() {
     }, 1700);
 
     const routeTimer = setTimeout(() => {
-      router.replace("/(tabs)/practices");
+      router.replace("/(tabs)/explore");
     }, 5200);
 
     return () => {
@@ -88,7 +90,7 @@ export default function Loading() {
           {moodEmoji}
         </Animated.Text>
 
-        <Text className="text-textPrimary text-xl italic text-center mt-10 leading-10">
+        <Text className="text-textPrimary text-xl italic text-center mt-10 leading-10" style={typography.body}>
           {LOADING_STEPS[stepIndex]}
         </Text>
 
@@ -99,14 +101,14 @@ export default function Loading() {
               className="h-4 w-4 rounded-full mx-2"
               style={{
                 backgroundColor:
-                  dot === stepIndex ? selectedTheme?.accent ?? "#22D3EE" : "#2A3342",
+                  dot === stepIndex ? selectedTheme?.accent ?? colors.primary : colors.cardBorder,
                 opacity: dot === stepIndex ? pulse : 0.7,
               }}
             />
           ))}
         </View>
 
-        <Text className="text-textMuted mt-16" style={{ letterSpacing: 8 }}>
+        <Text className="text-textMuted mt-16" style={[typography.label, { letterSpacing: 8 }]}>
           DHARMA AI
         </Text>
       </View>

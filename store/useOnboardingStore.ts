@@ -1,11 +1,13 @@
 import { create } from "zustand";
 
+export type GenderOption = "Male" | "Female" | "Other";
+
 type OnboardingState = {
   phone: string;
   name: string;
   email: string;
   dateOfBirth: Date | null;
-  gender: string | null;
+  gender: GenderOption | null;
   city: string;
   completed: boolean;
 
@@ -14,7 +16,7 @@ type OnboardingState = {
   setEmail: (email: string) => void;
   setDateOfBirth: (date: Date) => void;
   setCity: (city: string) => void;
-  setGender: (gender: string) => void;
+  setGender: (gender: GenderOption) => void;
 
   markCompleted: () => void;
   reset: () => void;

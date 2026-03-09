@@ -1,7 +1,6 @@
 import {
   Text,
   View,
-  Platform,
   ScrollView,
 } from "react-native";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -12,9 +11,7 @@ import { useOnboardingStore } from "@/store/useOnboardingStore";
 import FloatingOm from "../FloatingOhm";
 import { colors } from "@/theme/colors";
 import TextButton from "../TextButton";
-
-const SERIF = Platform.OS === "ios" ? "Georgia" : "serif";
-const SANS = Platform.OS === "ios" ? "Helvetica Neue" : "sans-serif";
+import { typography } from "@/theme/typography";
 
 type StepNameProps = {
   onNext: () => void;
@@ -103,12 +100,12 @@ export default function StepName({ onNext }: StepNameProps) {
         automaticallyAdjustKeyboardInsets
         showsVerticalScrollIndicator={false}
       >
-        <View className="flex-1 justify-center z-10 pt-24 pb-24">
+        <View className="flex-1 justify-center z-10 pt-0 pb-24">
           {/* Quote */}
           <View className="mb-8 pl-4 border-l border-onboardingGoldFaint">
             <Text
               className="text-[13px] italic leading-6 mb-3 text-onboardingWhite30"
-              style={{ fontFamily: SERIF }}
+              style={[typography.quote, typography.devanagari]}
             >
               “नामरूप — name and form —{"\n"}
               is the root of all existence.”
@@ -116,7 +113,7 @@ export default function StepName({ onNext }: StepNameProps) {
 
             <Text
               className="text-[10px] uppercase tracking-[2px] text-onboardingVerseLabel"
-              style={{ fontFamily: SANS }}
+              style={typography.label}
             >
               Vedic philosophy
             </Text>
@@ -125,7 +122,7 @@ export default function StepName({ onNext }: StepNameProps) {
           {/* Heading */}
           <Text
             className="text-[34px] leading-[42px] mb-12 text-onboardingWhite90"
-            style={{ fontFamily: SERIF }}
+            style={typography.heading}
           >
             {typedHeading}
           </Text>

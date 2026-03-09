@@ -1,4 +1,5 @@
-import { Animated, KeyboardAvoidingView, Platform, Text } from "react-native";
+import { useEffect, useRef } from "react";
+import { Animated, Pressable, Text, View } from "react-native";
 import PrimaryGlowButton from "@/components/onboarding/PrimaryGlowButton";
 import SacredInput from "@/components/ScaredInput";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
@@ -20,7 +21,14 @@ type WelcomeFormProps = {
   typedSubText: string;
   serif: string;
   sans: string;
-  onContinue: () => void;
+  otp: string;
+  setOtp: (value: string) => void;
+  otpSent: boolean;
+  isLoading: boolean;
+  error: string | null;
+  onRequestOtp: () => void;
+  onVerifyOtp: () => void;
+  onEditPhone: () => void;
 };
 
 export default function WelcomeForm({
@@ -38,10 +46,44 @@ export default function WelcomeForm({
   typedSubText,
   serif,
   sans,
-  onContinue,
+  otp,
+  setOtp,
+  otpSent,
+  isLoading,
+  error,
+  onRequestOtp,
+  onVerifyOtp,
+  onEditPhone,
 }: WelcomeFormProps) {
   const phone = useOnboardingStore((s) => s.phone);
   const setPhone = useOnboardingStore((s) => s.setPhone);
+  const otpReveal = useRef(new Animated.Value(otpSent ? 1 : 0)).current;
+  const canRequestOtp = phone.trim().length >= 7;
+  const canVerifyOtp = otpSent && otp.trim().length >= 4;
+
+  useEffect(() => {
+    Animated.timing(otpReveal, {
+      toValue: otpSent ? 1 : 0,
+      duration: 260,
+      useNativeDriver: false,
+    }).start();
+  }, [otpReveal, otpSent]);
+
+  const otpContainerStyle = {
+    opacity: otpReveal,
+    maxHeight: otpReveal.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 96],
+    }),
+    transform: [
+      {
+        translateY: otpReveal.interpolate({
+          inputRange: [0, 1],
+          outputRange: [-10, 0],
+        }),
+      },
+    ],
+  } as const;
 
   return (
     <Animated.View
@@ -86,23 +128,67 @@ export default function WelcomeForm({
           { opacity: inputOp, transform: [{ translateY: inputTY }] },
         ]}
       >
-        <SacredInput
-          label="mobile number"
-          value={phone}
-          onChangeText={setPhone}
-          keyboardType="phone-pad"
-          maxLength={15}
-          placeholder="+91 XXXXX XXXXX"
-          placeholderTextColor={C.white18}
-          selectionColor={C.goldLabel}
-          labelColor={C.goldLabel}
-          activeLabelColor={C.goldOm}
-          textColor={C.white90}
-          underlineColor={C.goldLabel}
-          underlineBaseColor={C.white06}
-          errorColor={colors.accentRose}
-        />
+        <View>
+          <View className="mb-2 flex-row items-center justify-between">
+            {otpSent ? (
+              <Pressable onPress={onEditPhone} className="rounded-full border px-3 py-1" style={{ borderColor: C.white18 }}>
+                <Text className="text-xs tracking-[0.4px]" style={{ color: C.white30, fontFamily: sans }}>
+                  edit
+                </Text>
+              </Pressable>
+            ) : (
+              <View />
+            )}
+          </View>
+
+          <View style={{ opacity: otpSent ? 0.82 : 1 }}>
+            <SacredInput
+              label="mobile number"
+              value={phone}
+              onChangeText={setPhone}
+              keyboardType="phone-pad"
+              maxLength={15}
+              editable={!otpSent}
+              prefixText="+91"
+              prefixColor={C.white30}
+              placeholder="98765 43210"
+              placeholderTextColor={C.white18}
+              selectionColor={C.goldLabel}
+              labelColor={C.goldLabel}
+              activeLabelColor={C.goldOm}
+              textColor={C.white90}
+              underlineColor={C.goldLabel}
+              underlineBaseColor={C.white06}
+              errorColor={colors.accentRose}
+            />
+          </View>
+
+          <Animated.View style={[{ overflow: "hidden" }, otpContainerStyle]}>
+            <SacredInput
+              label="otp"
+              value={otp}
+              onChangeText={setOtp}
+              keyboardType="number-pad"
+              maxLength={8}
+              placeholder="123456"
+              placeholderTextColor={C.white18}
+              selectionColor={C.goldLabel}
+              labelColor={C.goldLabel}
+              activeLabelColor={C.goldOm}
+              textColor={C.white90}
+              underlineColor={C.goldLabel}
+              underlineBaseColor={C.white06}
+              errorColor={colors.accentRose}
+            />
+          </Animated.View>
+        </View>
       </Animated.View>
+
+      {error ? (
+        <Text className="mt-4 text-sm" style={{ color: colors.accentRose, fontFamily: sans }}>
+          {error}
+        </Text>
+      ) : null}
 
       <Animated.View
         style={[
@@ -111,9 +197,17 @@ export default function WelcomeForm({
         ]}
       >
         <PrimaryGlowButton
-          label="continue →"
-          onPress={onContinue}
-          disabled={phone.trim().length < 7}
+          label={
+            otpSent
+              ? isLoading
+                ? "verifying..."
+                : "continue →"
+              : isLoading
+                ? "sending..."
+                : "send otp →"
+          }
+          onPress={otpSent ? onVerifyOtp : onRequestOtp}
+          disabled={otpSent ? !canVerifyOtp || isLoading : !canRequestOtp || isLoading}
         />
         <Text
           className="mt-4xl text-center text-[11px] leading-[18px] tracking-[0.4px]"

@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 interface MoodState {
   selectedMood: string | null;
-  setMood: (mood: string) => void;
+  setMood: (mood: string | null) => void;
 }
 
 export const useMoodStore = create<MoodState>((set) => ({

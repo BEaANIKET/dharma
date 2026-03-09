@@ -10,6 +10,11 @@ module.exports = {
   theme: {
     extend: {
       colors: tokens.colors,
+      fontFamily: {
+        ui: ["Outfit"],
+        heading: ["Cormorant Garamond"],
+        devanagari: ["Noto Sans Devanagari"],
+      },
     }
   },
   plugins: [],

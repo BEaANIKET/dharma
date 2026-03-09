@@ -7,6 +7,8 @@ import { useAuthStore } from "@/store/useAuthStore";
 export default function Index() {
   const onboardingCompleted = useOnboardingStore((state) => state.completed);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const user = useAuthStore((state) => state.user);
+  const bootstrap = useAuthStore((state) => state.bootstrap);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
 
   useEffect(() => {
@@ -14,8 +16,7 @@ export default function Index() {
 
     const bootstrapApp = async () => {
       try {
-        // TODO: Add token read + `/me` API validation here before routing.
-        // Keep startup loader visible until auth bootstrap is complete.
+        await bootstrap();
       } finally {
         if (!mounted) return;
         setIsBootstrapping(false);
@@ -32,17 +33,19 @@ export default function Index() {
   useEffect(() => {
     if (isBootstrapping) return;
 
-    if (!onboardingCompleted) {
-      router.replace("/onboarding");
-      return;
-    }
     if (!isAuthenticated) {
       router.replace("/onboarding");
       return;
     }
 
-    router.replace("/(tabs)/mood");
-  }, [isAuthenticated, isBootstrapping, onboardingCompleted]);
+    const hasProfileIdentity = Boolean(user?.name);
+    if (!onboardingCompleted && !hasProfileIdentity) {
+      router.replace("/onboarding");
+      return;
+    }
+
+    router.replace("/(tabs)/home");
+  }, [isAuthenticated, isBootstrapping, onboardingCompleted, user?.name]);
 
   return (
     <StartupLoader

@@ -20,6 +20,8 @@ import WelcomeVerseOverlay from "@/components/onboarding/welcome/WelcomeVerseOve
 import WelcomeForm from "@/components/onboarding/welcome/WelcomeForm";
 import WelcomeSkipButton from "@/components/onboarding/welcome/WelcomeSkipButton";
 import StartupLoader from "@/components/StartupLoader";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useOnboardingStore } from "@/store/useOnboardingStore";
 import {
   onboardingFormCopy,
   onboardingPalette as C,
@@ -27,6 +29,7 @@ import {
   onboardingVerses as VERSES,
 } from "@/theme/onboarding";
 import GradientBackground from "@/components/GradientBackground";
+import { fontFamilies } from "@/theme/typography";
 
 const {
   INTRO_MAX_MS,
@@ -68,6 +71,15 @@ export default function OnboardingWelcome() {
 
   const [typedHeadline, setTypedHeadline] = useState("");
   const [typedSubText, setTypedSubText] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const phone = useOnboardingStore((s) => s.phone);
+  const markCompleted = useOnboardingStore((s) => s.markCompleted);
+  const requestOtp = useAuthStore((s) => s.requestOtp);
+  const verifyOtp = useAuthStore((s) => s.verifyOtp);
+  const clearAuthError = useAuthStore((s) => s.clearError);
+  const authLoading = useAuthStore((s) => s.isLoading);
+  const authError = useAuthStore((s) => s.error);
 
   /* ── Animated values ── */
 
@@ -434,10 +446,42 @@ export default function OnboardingWelcome() {
   }, [stopTyping, stopFormTyping, stopVideo]);
 
   /* ── Continue ── */
-  const onContinue = async () => {
-    try { await typingSoundRef.current?.stopAsync(); await typingSoundRef.current?.unloadAsync(); } catch { }
-    try { await stopVideo(); } catch { }
-    router.replace("/onboarding/details");
+  const onRequestOtp = async () => {
+    clearAuthError();
+    try {
+      await requestOtp(toE164Indian(phone));
+      setOtpSent(true);
+    } catch {
+      // handled by store
+    }
+  };
+
+  const onVerifyOtp = async () => {
+    clearAuthError();
+    try {
+      const result = await verifyOtp(toE164Indian(phone), otp.trim());
+      try {
+        await typingSoundRef.current?.stopAsync();
+        await typingSoundRef.current?.unloadAsync();
+      } catch {}
+      try {
+        await stopVideo();
+      } catch {}
+      if (result.isNewUser) {
+        router.replace("/onboarding/details");
+        return;
+      }
+      markCompleted();
+      router.replace("/(tabs)/home");
+    } catch {
+      // handled by store
+    }
+  };
+
+  const onEditPhone = () => {
+    clearAuthError();
+    setOtp("");
+    setOtpSent(false);
   };
 
   /* ─────────────────────── RENDER ─────────────────────────── */
@@ -507,7 +551,14 @@ export default function OnboardingWelcome() {
                 typedSubText={typedSubText}
                 serif={SERIF}
                 sans={SANS}
-                onContinue={onContinue}
+                otp={otp}
+                setOtp={setOtp}
+                otpSent={otpSent}
+                isLoading={authLoading}
+                error={authError}
+                onRequestOtp={onRequestOtp}
+                onVerifyOtp={onVerifyOtp}
+                onEditPhone={onEditPhone}
               />
             )}
 
@@ -536,5 +587,12 @@ export default function OnboardingWelcome() {
   );
 }
 /* ─── Styles ──────────────────────────────────────────────────── */
-const SERIF = Platform.OS === "ios" ? "Georgia" : "serif";
-const SANS = Platform.OS === "ios" ? "Helvetica Neue" : "sans-serif";
+const SERIF = fontFamilies.heading;
+const SANS = fontFamilies.ui;
+
+function toE164Indian(rawPhone: string) {
+  const trimmed = rawPhone.trim();
+  if (trimmed.startsWith("+")) return trimmed;
+  const digits = trimmed.replace(/\D/g, "");
+  return `+91${digits}`;
+}

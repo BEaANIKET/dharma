@@ -1,14 +1,82 @@
-import { Text, View } from "react-native";
-import GradientBackground from "../../components/GradientBackground";
+import { useEffect, useMemo, useState } from "react";
+import { ScrollView, Text } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import GradientBackground from "@/components/GradientBackground";
+import ProfileStreakCard from "@/components/profile/ProfileStreakCard";
+import ProfileStatsRow from "@/components/profile/ProfileStatsRow";
+import ProfilePreferences from "@/components/profile/ProfilePreferences";
+import ProfileSettings from "@/components/profile/ProfileSettings";
+import { colors } from "@/theme/colors";
+import { typography } from "@/theme/typography";
+import { useAuthStore } from "@/store/useAuthStore";
+import { friendlyMessage } from "@/services/api";
 
-export default function Story() {
+export default function ProfileScreen() {
+  const insets = useSafeAreaInsets();
+  const user = useAuthStore((state) => state.user);
+  const fetchCurrentUser = useAuthStore((state) => state.fetchCurrentUser);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const run = async () => {
+      setLoading(true);
+      try {
+        await fetchCurrentUser();
+      } catch (e) {
+        if (mounted) {
+          setError(friendlyMessage(e));
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+    void run();
+    return () => {
+      mounted = false;
+    };
+  }, [fetchCurrentUser]);
+
+  const streak = user?.stats?.current_streak ?? 0;
+  const statsValues = useMemo(
+    () => ({
+      verses: String(Math.max(0, Math.round((user?.stats?.longest_streak ?? 0) * 3.2))),
+      minutes: String(Math.max(0, Math.round((user?.stats?.current_streak ?? 0) * 6.5))),
+      deeds: String(Math.max(0, Math.round((user?.stats?.current_streak ?? 0) / 2))),
+    }),
+    [user]
+  );
+
   return (
     <GradientBackground>
-      <View className="flex-1 justify-center items-center">
-        <Text className="text-textPrimary text-xl">
-          Profile Screen
+      <ScrollView
+        className="flex-1 px-5"
+        contentContainerStyle={{ paddingTop: insets.top + 14, paddingBottom: insets.bottom + 30 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <Text className="mb-6 text-5xl leading-[50px]" style={[typography.heading, { color: colors.textPrimary }]}>
+          Your Journey
         </Text>
-      </View>
+
+        {loading ? (
+          <Text className="mb-4 text-sm" style={{ color: colors.textSecondary }}>
+            Updating your journey...
+          </Text>
+        ) : null}
+        {error ? (
+          <Text className="mb-4 text-sm" style={{ color: colors.accentRose }}>
+            {error}
+          </Text>
+        ) : null}
+
+        <ProfileStreakCard streak={streak} />
+        <ProfileStatsRow values={statsValues} />
+        <ProfilePreferences />
+        <ProfileSettings />
+      </ScrollView>
     </GradientBackground>
   );
 }

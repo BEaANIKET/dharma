@@ -11,20 +11,21 @@ export default function DharmaHeader() {
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const logout = useAuthStore((state) => state.logout);
+  const isLoading = useAuthStore((state) => state.isLoading);
   const initials = user?.name?.trim().charAt(0).toUpperCase() ?? null;
 
   const handleProfilePress = () => {
     if (!isAuthenticated) {
-      router.push("/auth");
+      router.push("/onboarding");
       return;
     }
     setOpen(true);
   };
 
-  const handleSignOut = () => {
-    logout();
+  const handleSignOut = async () => {
+    await logout();
     setOpen(false);
-    router.replace("/auth");
+    router.replace("/onboarding");
   };
 
   return (
@@ -101,7 +102,7 @@ export default function DharmaHeader() {
                       {user?.name ?? "Dharma Seeker"}
                     </Text>
                     <Text className="text-textSecondary mt-1">
-                      {user?.email ?? "seeker@dharma.ai"}
+                      {user?.mobile ?? user?.email ?? "seeker@dharma.ai"}
                     </Text>
                   </View>
                 </View>
@@ -114,9 +115,10 @@ export default function DharmaHeader() {
 
               <Pressable
                 onPress={handleSignOut}
+                disabled={isLoading}
                 className="mt-6 bg-white/5 border border-white/10 rounded-2xl p-4 items-center"
               >
-                <Text className="text-white/70">Sign out</Text>
+                <Text className="text-white/70">{isLoading ? "Signing out..." : "Sign out"}</Text>
               </Pressable>
             </LinearGradient>
           </Pressable>
