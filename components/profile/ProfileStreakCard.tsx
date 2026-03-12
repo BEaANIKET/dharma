@@ -2,7 +2,6 @@ import { Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 import { WEEK_LABELS } from "./data";
 
 interface ProfileStreakCardProps {
@@ -27,10 +26,10 @@ export default function ProfileStreakCard({ streak }: ProfileStreakCardProps) {
 
       <View className="items-center">
         <Ionicons name="flame-outline" size={32} color={colors.primary} />
-        <Text className="mt-1 text-6xl leading-[58px]" style={[typography.heading, { color: colors.primary }]}>
+        <Text className="mt-1 text-3xl leading-tight font-heading" style={{ color: colors.primary }}>
           {streak}
         </Text>
-        <Text className="mt-1 text-sm" style={{ color: colors.textSecondary }}>
+        <Text className="mt-1 text-sm font-ui" style={{ color: colors.textSecondary }}>
           Day Streak
         </Text>
 
@@ -54,7 +53,7 @@ export default function ProfileStreakCard({ streak }: ProfileStreakCardProps) {
                     style={{ borderColor: colors.cardBorder, backgroundColor: colors.backgroundSoft }}
                   />
                 )}
-                <Text className="mt-1 text-[10px]" style={{ color: colors.textMuted }}>
+                <Text className="mt-1 text-xs font-ui" style={{ color: colors.textMuted }}>
                   {day}
                 </Text>
               </View>

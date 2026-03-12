@@ -6,7 +6,7 @@ import { SETTINGS } from "./data";
 export default function ProfileSettings() {
   return (
     <View>
-      <Text className="mb-3 text-sm font-semibold" style={{ color: colors.textPrimary }}>
+      <Text className="mb-3 text-sm font-uiSemiBold" style={{ color: colors.textPrimary }}>
         Settings
       </Text>
 
@@ -18,10 +18,10 @@ export default function ProfileSettings() {
         >
           <Ionicons name={item.icon} size={16} color={colors.textSecondary} />
           <View className="ml-3 flex-1">
-            <Text className="text-sm" style={{ color: colors.textPrimary }}>
+            <Text className="text-sm font-ui" style={{ color: colors.textPrimary }}>
               {item.label}
             </Text>
-            <Text className="text-[11px]" style={{ color: colors.textMuted }}>
+            <Text className="text-xs font-ui" style={{ color: colors.textMuted }}>
               {item.sub}
             </Text>
           </View>

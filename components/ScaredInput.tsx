@@ -7,7 +7,6 @@ import {
   TextInputProps,
   View,
 } from "react-native";
-import { typography } from "@/theme/typography";
 
 interface SacredInputProps extends TextInputProps {
   label?: string;
@@ -71,9 +70,8 @@ export default function SacredInput({
     <View className="w-full mb-6">
       {label && (
         <Text
-          className="mb-2 text-[11px] uppercase tracking-[4px]"
+          className="mb-2 text-xs uppercase tracking-widest font-ui"
           style={{
-            ...typography.label,
             color: focused
               ? activeLabelColor ?? underlineColor
               : labelColor,
@@ -86,9 +84,8 @@ export default function SacredInput({
       <View className="flex-row items-center">
         {prefixText ? (
           <Text
-            className="mr-2 text-[18px]"
+            className="mr-2 text-lg font-ui"
             style={{
-              ...typography.body,
               color: prefixColor ?? textColor,
             }}
           >
@@ -98,10 +95,9 @@ export default function SacredInput({
 
         <TextInput
           {...props}
-          className="flex-1 text-[18px] py-2"
+          className="flex-1 text-lg py-2 font-ui"
           style={[
             {
-              ...typography.body,
               color: textColor,
             },
             style,
@@ -129,8 +125,8 @@ export default function SacredInput({
 
       {error && (
         <Text
-          className="mt-2 text-xs"
-          style={{ color: errorColor, ...typography.label }}
+          className="mt-2 text-xs font-ui"
+          style={{ color: errorColor }}
         >
           {error}
         </Text>

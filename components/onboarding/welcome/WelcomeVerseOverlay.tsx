@@ -7,7 +7,6 @@ type WelcomeVerseOverlayProps = {
   verseTextOp: Animated.Value;
   verseLabel: string;
   typedText: string;
-  serif: string;
 };
 
 export default function WelcomeVerseOverlay({
@@ -16,7 +15,6 @@ export default function WelcomeVerseOverlay({
   verseTextOp,
   verseLabel,
   typedText,
-  serif,
 }: WelcomeVerseOverlayProps) {
   return (
     <Animated.View
@@ -25,14 +23,14 @@ export default function WelcomeVerseOverlay({
       pointerEvents="none"
     >
       <Animated.Text
-        className="mb-[14px] text-left text-[10px] uppercase tracking-[4px]"
-        style={{ opacity: labelOp, color: C.verseLabel, fontFamily: serif }}
+        className="mb-[14px] text-left text-xs uppercase tracking-widest font-heading"
+        style={{ opacity: labelOp, color: C.verseLabel }}
       >
         {verseLabel}
       </Animated.Text>
       <Animated.Text
-        className="text-left text-[19px] italic leading-8 tracking-[0.4px]"
-        style={{ opacity: verseTextOp, color: C.verseText, fontFamily: serif }}
+        className="text-left text-lg italic leading-relaxed tracking-wide font-headingItalic"
+        style={{ opacity: verseTextOp, color: C.verseText }}
       >
         {typedText}
       </Animated.Text>

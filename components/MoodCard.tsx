@@ -29,12 +29,15 @@ export default function MoodCard({
         borderColor: isSelected ? borderColor : colors.cardBorder,
       }}
     >
-      <Text className="text-[33px]">{emoji}</Text>
+      <Text className="text-3xl">{emoji}</Text>
       <Text
-        className="mt-2 text-center text-[18px]"
+        className={
+          isSelected
+            ? "mt-2 text-center text-lg font-uiBold"
+            : "mt-2 text-center text-lg font-uiMedium"
+        }
         style={{
           color: isSelected ? accentColor : colors.textSecondary,
-          fontWeight: isSelected ? "700" : "500",
         }}
       >
         {label}

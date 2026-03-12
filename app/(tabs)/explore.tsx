@@ -24,10 +24,7 @@ export default function Practices() {
 
         <ThemedCard theme={selectedTheme}>
           <View className="flex-row items-center">
-            <Text
-              style={{ fontSize: 48 }}
-              className="mr-4"
-            >
+            <Text className="mr-4 text-3xl">
               {selectedTheme?.emoji}
             </Text>
 
@@ -53,7 +50,7 @@ export default function Practices() {
               0
             </Text>
 
-            <Text className="text-white/40 text-[10px] mt-1">
+            <Text className="text-white/40 text-xs mt-1">
               of 4
             </Text>
           </View>
@@ -78,7 +75,7 @@ export default function Practices() {
             {/* Header */}
             <View className="flex-row items-center mb-4">
               <Text className="mr-2 text-lg">📖</Text>
-              <Text className="text-yellow-500 tracking-[4px] text-xs">
+              <Text className="text-yellow-500 tracking-widest text-xs">
                 BHAGAVAD GITA 2.47
               </Text>
             </View>
@@ -119,7 +116,7 @@ export default function Practices() {
             {/* Header */}
             <View className="flex-row items-center mb-4">
               <Text className="mr-2 text-lg">📖</Text>
-              <Text className="text-yellow-500 tracking-[4px] text-xs">
+              <Text className="text-yellow-500 tracking-widest text-xs">
                 BHAGAVAD GITA 2.47
               </Text>
             </View>

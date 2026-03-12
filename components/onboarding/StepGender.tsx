@@ -3,7 +3,6 @@ import { Text, View } from "react-native";
 import GenderPills from "./GenderPills";
 import PrimaryGlowButton from "./PrimaryGlowButton";
 import { onboardingPalette as C } from "@/theme/onboarding";
-import { typography } from "@/theme/typography";
 
 type StepGenderProps = {
   onNext: () => void;
@@ -17,8 +16,8 @@ export default function StepGender({ onNext, onBack }: StepGenderProps) {
   return (
     <View className="flex-1 px-6 justify-center">
       <Text
-        className="text-4xl italic leading-[44px] mb-10"
-        style={[typography.heading, { color: C.white90 }]}
+        className="text-3xl italic leading-tight mb-10 font-heading"
+        style={{ color: C.white90 }}
       >
         how does your{"\n"}energy express?
       </Text>
@@ -26,7 +25,7 @@ export default function StepGender({ onNext, onBack }: StepGenderProps) {
       <GenderPills value={gender} onChange={setGender} />
 
       <View className="flex-row justify-between mt-10">
-        <Text onPress={onBack} style={{ color: C.white18 }}>
+        <Text onPress={onBack} className="font-ui" style={{ color: C.white18 }}>
           ← back
         </Text>
 

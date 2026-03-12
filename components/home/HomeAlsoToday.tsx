@@ -15,10 +15,11 @@ export default function HomeAlsoToday({ mainType, recipe, thumbs, onThumb }: Hom
   const verse = recipe.verse;
   const breathing = recipe.breathing;
   const reflections = recipe.reflections;
+  const formatGitaRef = (ch: number, v: number) => (ch > 0 && v > 0 ? `Gita ${ch}.${v}` : "Bhagavad Gita");
 
   return (
     <View className="mt-5">
-      <Text className="mb-3 text-sm font-semibold" style={{ color: colors.textSecondary, letterSpacing: 0.5 }}>
+      <Text className="mb-3 text-sm font-uiSemiBold tracking-wide" style={{ color: colors.textSecondary }}>
         Also Today
       </Text>
 
@@ -38,10 +39,10 @@ export default function HomeAlsoToday({ mainType, recipe, thumbs, onThumb }: Hom
           />
         </View>
         <View className="flex-1">
-          <Text className="text-base font-semibold" style={{ color: colors.textPrimary }}>
-            {mainType === "verse" ? breathing.name : `Gita ${verse.ch}.${verse.v}`}
+          <Text className="text-base font-uiSemiBold" style={{ color: colors.textPrimary }}>
+            {mainType === "verse" ? breathing.name : formatGitaRef(verse.ch, verse.v)}
           </Text>
-          <Text className="text-xs" style={{ color: colors.textMuted }}>
+          <Text className="text-xs font-ui" style={{ color: colors.textMuted }}>
             {mainType === "verse" ? `${breathing.pattern} · ${breathing.duration}` : "Listen to verse with commentary"}
           </Text>
         </View>
@@ -60,11 +61,11 @@ export default function HomeAlsoToday({ mainType, recipe, thumbs, onThumb }: Hom
           <Ionicons name="heart-outline" size={18} color={colors.accentRose} />
         </View>
         <View className="flex-1">
-          <Text className="text-base font-semibold" style={{ color: colors.textPrimary }}>
+          <Text className="text-base font-uiSemiBold" style={{ color: colors.textPrimary }}>
             Punya · Good Deed
           </Text>
-          <Text className="text-xs" style={{ color: colors.textMuted }}>
-            {recipe.punya}
+          <Text className="text-xs font-ui" style={{ color: colors.textMuted }}>
+            {recipe.punya.title}
           </Text>
         </View>
         <ThumbButton direction="up" active={thumbs.punya === "up"} onPress={() => onThumb("punya", "up")} />
@@ -83,10 +84,10 @@ export default function HomeAlsoToday({ mainType, recipe, thumbs, onThumb }: Hom
             <Ionicons name="chatbubble-outline" size={18} color={colors.accentIndigo} />
           </View>
           <View>
-            <Text className="text-base font-semibold" style={{ color: colors.textPrimary }}>
+            <Text className="text-base font-uiSemiBold" style={{ color: colors.textPrimary }}>
               Reflections
             </Text>
-            <Text className="text-xs" style={{ color: colors.textMuted }}>
+            <Text className="text-xs font-ui" style={{ color: colors.textMuted }}>
               Journal prompts for you
             </Text>
           </View>
@@ -102,7 +103,7 @@ export default function HomeAlsoToday({ mainType, recipe, thumbs, onThumb }: Hom
               marginBottom: index === reflections.length - 1 ? 0 : 8,
             }}
           >
-            <Text className="text-sm italic leading-6" style={{ color: colors.textSecondary }}>
+            <Text className="text-sm leading-6 font-uiItalic" style={{ color: colors.textSecondary }}>
               &quot;{reflection}&quot;
             </Text>
           </View>

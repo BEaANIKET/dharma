@@ -19,8 +19,6 @@ type WelcomeFormProps = {
   btnTY: Animated.Value;
   typedHeadline: string;
   typedSubText: string;
-  serif: string;
-  sans: string;
   otp: string;
   setOtp: (value: string) => void;
   otpSent: boolean;
@@ -44,8 +42,6 @@ export default function WelcomeForm({
   btnTY,
   typedHeadline,
   typedSubText,
-  serif,
-  sans,
   otp,
   setOtp,
   otpSent,
@@ -92,17 +88,16 @@ export default function WelcomeForm({
         { opacity: formOp, transform: [{ translateY: formTY }] },
       ]}
     >
-      <Text className="mb-4 text-xs tracking-[3px]" style={{ color: C.goldOm, fontFamily: serif }}>
+      <Text className="mb-4 text-xs tracking-widest font-heading" style={{ color: C.goldOm }}>
         ॐ  dharma
       </Text>
 
       <Animated.Text
-        className="mb-[18px] text-4xl italic leading-[46px]"
+        className="mb-[18px] text-3xl italic leading-tight font-headingItalic"
         style={{
           opacity: headOp,
           transform: [{ translateY: headTY }],
           color: C.white90,
-          fontFamily: serif,
         }}
       >
         {typedHeadline}
@@ -111,12 +106,11 @@ export default function WelcomeForm({
       <Animated.View className="mb-4 h-px w-8" style={{ opacity: headOp, backgroundColor: C.goldFaint }} />
 
       <Animated.Text
-        className="mb-8 text-[15px] italic leading-[25px]"
+        className="mb-8 text-base italic leading-relaxed font-headingItalic"
         style={{
           opacity: subOp,
           transform: [{ translateY: subTY }],
           color: C.white30,
-          fontFamily: serif,
         }}
       >
         {typedSubText}
@@ -132,7 +126,7 @@ export default function WelcomeForm({
           <View className="mb-2 flex-row items-center justify-between">
             {otpSent ? (
               <Pressable onPress={onEditPhone} className="rounded-full border px-3 py-1" style={{ borderColor: C.white18 }}>
-                <Text className="text-xs tracking-[0.4px]" style={{ color: C.white30, fontFamily: sans }}>
+                <Text className="text-xs tracking-wide font-ui" style={{ color: C.white30 }}>
                   edit
                 </Text>
               </Pressable>
@@ -185,7 +179,7 @@ export default function WelcomeForm({
       </Animated.View>
 
       {error ? (
-        <Text className="mt-4 text-sm" style={{ color: colors.accentRose, fontFamily: sans }}>
+        <Text className="mt-4 text-sm font-ui" style={{ color: colors.accentRose }}>
           {error}
         </Text>
       ) : null}
@@ -210,8 +204,8 @@ export default function WelcomeForm({
           disabled={otpSent ? !canVerifyOtp || isLoading : !canRequestOtp || isLoading}
         />
         <Text
-          className="mt-4xl text-center text-[11px] leading-[18px] tracking-[0.4px]"
-          style={{ color: C.privacy, fontFamily: sans }}
+          className="mt-4xl text-center text-xs leading-relaxed tracking-wide font-ui"
+          style={{ color: C.privacy }}
         >
           ∴  your data is sacred · encrypted · never sold
         </Text>

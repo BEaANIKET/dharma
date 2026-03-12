@@ -48,7 +48,7 @@ export default function MoodScreen() {
       return;
     }
     clearTimers();
-    setMainType(Math.random() > 0.45 ? "verse" : "breathing");
+    setMainType("verse") ;
     setBreathingActive(false);
     setIsPlaying(false);
     setRecipeError(null);

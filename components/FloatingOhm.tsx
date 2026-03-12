@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Text, View, Animated, Easing } from "react-native";
 import { colors } from "@/theme/tokens";
-import { typography } from "@/theme/typography";
 
 type FloatingOmProps = {
   size?: number;
@@ -64,7 +63,6 @@ export default function FloatingOm({
   return (
     <Animated.View
       pointerEvents="none"
-      className=""
       style={{
         transform: [
           // { translateY: floatAnim },
@@ -73,8 +71,8 @@ export default function FloatingOm({
       }}
     >
       <Text
+        className="font-heading"
         style={{
-          ...typography.heading,
           fontSize: size,
           color,
           opacity,

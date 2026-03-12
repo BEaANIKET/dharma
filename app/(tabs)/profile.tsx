@@ -7,7 +7,6 @@ import ProfileStatsRow from "@/components/profile/ProfileStatsRow";
 import ProfilePreferences from "@/components/profile/ProfilePreferences";
 import ProfileSettings from "@/components/profile/ProfileSettings";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 import { useAuthStore } from "@/store/useAuthStore";
 import { friendlyMessage } from "@/services/api";
 
@@ -57,17 +56,17 @@ export default function ProfileScreen() {
         contentContainerStyle={{ paddingTop: insets.top + 14, paddingBottom: insets.bottom + 30 }}
         showsVerticalScrollIndicator={false}
       >
-        <Text className="mb-6 text-5xl leading-[50px]" style={[typography.heading, { color: colors.textPrimary }]}>
+        <Text className="mb-6 text-3xl leading-tight font-heading" style={{ color: colors.textPrimary }}>
           Your Journey
         </Text>
 
         {loading ? (
-          <Text className="mb-4 text-sm" style={{ color: colors.textSecondary }}>
+          <Text className="mb-4 text-sm font-ui" style={{ color: colors.textSecondary }}>
             Updating your journey...
           </Text>
         ) : null}
         {error ? (
-          <Text className="mb-4 text-sm" style={{ color: colors.accentRose }}>
+          <Text className="mb-4 text-sm font-ui" style={{ color: colors.accentRose }}>
             {error}
           </Text>
         ) : null}

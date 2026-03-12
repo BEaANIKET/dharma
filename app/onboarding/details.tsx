@@ -20,7 +20,7 @@ export default function OnboardingDetails() {
   return (
     <SafeAreaView className="flex-1 bg-onboardingBg">
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
       >

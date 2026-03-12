@@ -11,7 +11,6 @@ import { useOnboardingStore } from "@/store/useOnboardingStore";
 import FloatingOm from "../FloatingOhm";
 import { colors } from "@/theme/colors";
 import TextButton from "../TextButton";
-import { typography } from "@/theme/typography";
 
 type StepNameProps = {
   onNext: () => void;
@@ -104,16 +103,14 @@ export default function StepName({ onNext }: StepNameProps) {
           {/* Quote */}
           <View className="mb-8 pl-4 border-l border-onboardingGoldFaint">
             <Text
-              className="text-[13px] italic leading-6 mb-3 text-onboardingWhite30"
-              style={[typography.quote, typography.devanagari]}
+              className="text-sm italic leading-relaxed mb-3 text-onboardingWhite30 font-devanagari"
             >
               “नामरूप — name and form —{"\n"}
               is the root of all existence.”
             </Text>
 
             <Text
-              className="text-[10px] uppercase tracking-[2px] text-onboardingVerseLabel"
-              style={typography.label}
+              className="text-xs uppercase tracking-widest text-onboardingVerseLabel font-ui"
             >
               Vedic philosophy
             </Text>
@@ -121,8 +118,7 @@ export default function StepName({ onNext }: StepNameProps) {
 
           {/* Heading */}
           <Text
-            className="text-[34px] leading-[42px] mb-12 text-onboardingWhite90"
-            style={typography.heading}
+            className="text-3xl leading-tight mb-12 text-onboardingWhite90 font-heading"
           >
             {typedHeading}
           </Text>

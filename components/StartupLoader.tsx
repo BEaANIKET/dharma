@@ -1,6 +1,5 @@
 import { ActivityIndicator, Image, Text, View } from "react-native";
 import { colors } from "@/theme/tokens";
-import { typography } from "@/theme/typography";
 
 type StartupLoaderProps = {
   message?: string;
@@ -21,11 +20,13 @@ export default function StartupLoader({
       <Image
         source={require("../assets/images/mydharmalogo.png")}
         resizeMode="contain"
-        style={{ width: 180, height: 180 }}
+        className="h-[180px] w-[180px]"
       />
-      <Text className="mt-6 text-lg font-semibold text-center" style={[typography.body, { color: colors.textPrimary }]}>{message}</Text>
+      <Text className="mt-6 text-lg font-semibold text-center font-ui" style={{ color: colors.textPrimary }}>
+        {message}
+      </Text>
       {!!subMessage && (
-        <Text className="mt-2 text-sm text-center" style={[typography.body, { color: colors.textSecondary }]}>
+        <Text className="mt-2 text-sm text-center font-ui" style={{ color: colors.textSecondary }}>
           {subMessage}
         </Text>
       )}

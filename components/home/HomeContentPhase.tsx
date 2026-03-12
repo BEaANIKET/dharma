@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { LayoutAnimation, Platform, Pressable, Text, UIManager, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "@/theme/colors";
+import { textStyles } from "@/theme/typography";
 import { MOOD_OPTIONS, MainType, MoodLabel, ResolvedHomeRecipe, ThumbDirection } from "./data";
 import HomeMainCard from "./HomeMainCard";
 
@@ -43,6 +44,8 @@ export default function HomeContentPhase({
   const moodTheme = MOOD_OPTIONS.find((mood) => mood.label === moodLabel);
   const sectionTopY = useRef(0);
   const [expandedCard, setExpandedCard] = useState<RecipeCardType>(mainType);
+  const formatGitaRef = (ch: number, v: number) =>
+    ch > 0 && v > 0 ? `Bhagavad Gita ${ch}.${v}` : "Bhagavad Gita";
 
   useEffect(() => {
     setExpandedCard(mainType);
@@ -79,7 +82,7 @@ export default function HomeContentPhase({
     if (card === "verse") {
       icon = "book-outline";
       iconColor = colors.primary;
-      title = `Bhagavad Gita ${recipe.verse.ch}.${recipe.verse.v}`;
+      title = formatGitaRef(recipe.verse.ch, recipe.verse.v);
       subtitle = recipe.verse.english;
     } else if (card === "breathing") {
       icon = "leaf-outline";
@@ -90,7 +93,7 @@ export default function HomeContentPhase({
       icon = "heart-outline";
       iconColor = colors.accentRose;
       title = "Punya · Good Deed";
-      subtitle = recipe.punya;
+      subtitle = recipe.punya.title;
     } else {
       icon = "chatbubble-outline";
       iconColor = colors.accentIndigo;
@@ -115,10 +118,10 @@ export default function HomeContentPhase({
           <Ionicons name={icon} size={18} color={iconColor} />
         </View>
         <View className="flex-1">
-          <Text className="text-base font-semibold" style={{ color: colors.textPrimary }}>
+          <Text className="text-base font-uiSemiBold" style={{ color: colors.textPrimary }}>
             {title}
           </Text>
-          <Text className="text-xs" numberOfLines={1} style={{ color: colors.textMuted }}>
+          <Text className="text-xs font-ui" numberOfLines={1} style={{ color: colors.textMuted }}>
             {subtitle}
           </Text>
         </View>
@@ -151,29 +154,51 @@ export default function HomeContentPhase({
       return (
         <View
           key={card}
-          className="mb-3 rounded-3xl border p-5"
+          className="mb-3 rounded-3xl border px-7 pt-10 pb-8"
           style={{ borderColor: colors.cardBorder, backgroundColor: colors.backgroundSoft }}
         >
-          <View className="mb-2 flex-row items-center">
-            <View
-              className="mr-3 h-11 w-11 items-center justify-center rounded-xl border"
-              style={{ borderColor: `${colors.accentRose}4D`, backgroundColor: `${colors.accentRose}1A` }}
-            >
-              <Ionicons name="heart-outline" size={18} color={colors.accentRose} />
+          <Text className="text-xs uppercase tracking-widest font-uiSemiBold text-textMuted">FOR YOU RIGHT NOW</Text>
+
+          <View className="mt-3 flex-row items-center gap-[14px]">
+            <View className="h-12 w-12 items-center justify-center rounded-[14px]" style={{ backgroundColor: `${colors.accentRose}1A` }}>
+              <Text className="text-2xl">{recipe.punya.emoji}</Text>
             </View>
-            <View>
-              <Text className="text-base font-semibold" style={{ color: colors.textPrimary }}>
-                Punya · Good Deed
-              </Text>
-              <Text className="text-xs" style={{ color: colors.textMuted }}>
-                One concrete act for today
-              </Text>
+            <View className="flex-1">
+              <Text className="text-2xl font-headingBold text-textPrimary">{recipe.punya.title}</Text>
+              <Text className="text-sm text-textSecondary">{recipe.punya.subtitle || "A small act of kindness"}</Text>
             </View>
           </View>
-          <Text className="mb-3 text-sm leading-6" style={{ color: colors.textSecondary }}>
-            {recipe.punya}
-          </Text>
-          <View className="flex-row justify-center gap-3">
+
+          <View className="mt-5 rounded-2xl border p-5" style={{ borderColor: colors.cardBorder, backgroundColor: colors.background }}>
+            <Text className="text-base leading-relaxed text-textSecondary font-uiMedium">
+              {recipe.punya.activity}
+            </Text>
+          </View>
+
+          {recipe.punya.ai_why ? (
+            <View className="mt-4 rounded-2xl border p-5" style={{ borderColor: colors.cardBorder, backgroundColor: colors.background }}>
+              <Text className="text-xs uppercase tracking-widest font-uiSemiBold text-textMuted">WHY THIS HELPS</Text>
+              <Text className="mt-2 text-sm leading-relaxed text-textSecondary">
+                {recipe.punya.ai_why}
+              </Text>
+            </View>
+          ) : null}
+
+          {recipe.punya.ai_impact.length > 0 ? (
+            <View className="mt-4 rounded-2xl border p-5" style={{ borderColor: colors.cardBorder, backgroundColor: colors.background }}>
+              <Text className="text-xs uppercase tracking-widest font-uiSemiBold text-textMuted">IMPACT</Text>
+              <View className="mt-3 gap-3">
+                {recipe.punya.ai_impact.map((impact, index) => (
+                  <View key={`${impact.point}-${index}`} className="flex-row items-start gap-3">
+                    <Text className="text-lg">{impact.emoji}</Text>
+                    <Text className="flex-1 text-sm leading-relaxed text-textSecondary">{impact.point}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          ) : null}
+
+          <View className="mt-5 flex-row justify-center gap-3">
             <Pressable
               onPress={() => onThumb("punya", "up")}
               className="rounded-full border px-4 py-2"
@@ -182,7 +207,7 @@ export default function HomeContentPhase({
                 backgroundColor: thumbs.punya === "up" ? `${colors.accentSage}20` : "transparent",
               }}
             >
-              <Text style={{ color: thumbs.punya === "up" ? colors.accentSage : colors.textSecondary }}>
+              <Text className="font-ui" style={{ color: thumbs.punya === "up" ? colors.accentSage : colors.textSecondary }}>
                 Helpful
               </Text>
             </Pressable>
@@ -194,7 +219,7 @@ export default function HomeContentPhase({
                 backgroundColor: thumbs.punya === "down" ? `${colors.accentRose}20` : "transparent",
               }}
             >
-              <Text style={{ color: thumbs.punya === "down" ? colors.accentRose : colors.textSecondary }}>
+              <Text className="font-ui" style={{ color: thumbs.punya === "down" ? colors.accentRose : colors.textSecondary }}>
                 Skip
               </Text>
             </Pressable>
@@ -217,10 +242,10 @@ export default function HomeContentPhase({
             <Ionicons name="chatbubble-outline" size={18} color={colors.accentIndigo} />
           </View>
           <View>
-            <Text className="text-base font-semibold" style={{ color: colors.textPrimary }}>
+            <Text className="text-base font-uiSemiBold" style={{ color: colors.textPrimary }}>
               Reflections
             </Text>
-            <Text className="text-xs" style={{ color: colors.textMuted }}>
+            <Text className="text-xs font-ui" style={{ color: colors.textMuted }}>
               Journal prompts for you
             </Text>
           </View>
@@ -236,7 +261,7 @@ export default function HomeContentPhase({
               marginBottom: index === recipe.reflections.length - 1 ? 0 : 8,
             }}
           >
-            <Text className="text-sm italic leading-6" style={{ color: colors.textSecondary }}>
+            <Text className="text-sm leading-6 font-uiItalic" style={{ color: colors.textSecondary }}>
               &quot;{reflection}&quot;
             </Text>
           </View>
@@ -260,7 +285,7 @@ export default function HomeContentPhase({
           }}
         >
           <Text className="mr-2 text-base">{moodTheme?.emoji ?? "🕉️"}</Text>
-          <Text className="text-sm font-semibold" style={{ color: colors.primary }}>
+          <Text className="text-sm font-uiSemiBold" style={{ color: colors.primary }}>
             {moodLabel}
           </Text>
         </View>
@@ -269,21 +294,21 @@ export default function HomeContentPhase({
           className="rounded-full border px-3 py-1"
           style={{ borderColor: colors.cardBorder, backgroundColor: colors.backgroundSoft }}
         >
-          <Text className="text-sm" style={{ color: colors.textSecondary }}>
+          <Text className="text-sm font-ui" style={{ color: colors.textSecondary }}>
             Change
           </Text>
         </Pressable>
       </View>
 
       {context ? (
-        <Text className="mb-3 text-sm italic" style={{ color: colors.textMuted }}>
+        <Text className={`${textStyles.caption} mb-3 font-uiItalic`} style={{ color: colors.textMuted }}>
           &quot;{context}&quot;
         </Text>
       ) : null}
 
       {recipeError ? (
         <View className="mb-3 rounded-xl border p-3" style={{ borderColor: `${colors.accentRose}66`, backgroundColor: `${colors.accentRose}12` }}>
-          <Text className="text-sm" style={{ color: colors.accentRose }}>
+          <Text className="text-sm font-ui" style={{ color: colors.accentRose }}>
             {recipeError}
           </Text>
           {onRetryRecipe ? (
@@ -292,7 +317,7 @@ export default function HomeContentPhase({
               className="mt-2 self-start rounded-full border px-3 py-1"
               style={{ borderColor: colors.cardBorder, backgroundColor: colors.backgroundSoft }}
             >
-              <Text className="text-xs font-semibold" style={{ color: colors.textPrimary }}>
+              <Text className="text-xs font-uiSemiBold" style={{ color: colors.textPrimary }}>
                 Retry
               </Text>
             </Pressable>
@@ -306,7 +331,7 @@ export default function HomeContentPhase({
         </View>
       ) : (
         <View className="rounded-3xl border p-5" style={{ borderColor: colors.cardBorder, backgroundColor: colors.backgroundSoft }}>
-          <Text className="text-base" style={{ color: colors.textSecondary }}>
+          <Text className={`${textStyles.body}`} style={{ color: colors.textSecondary }}>
             We could not load today&apos;s recipe data yet.
           </Text>
           {onRetryRecipe ? (
@@ -315,7 +340,7 @@ export default function HomeContentPhase({
               className="mt-4 self-start rounded-full border px-4 py-2"
               style={{ borderColor: colors.primarySoft, backgroundColor: colors.primarySurface }}
             >
-              <Text className="text-sm font-semibold" style={{ color: colors.primary }}>
+              <Text className="text-sm font-uiSemiBold" style={{ color: colors.primary }}>
                 Retry fetch
               </Text>
             </Pressable>

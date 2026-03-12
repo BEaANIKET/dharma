@@ -3,7 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import MoodCard from "@/components/MoodCard";
 import NotSureButton from "@/components/NotSureButton";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
+import { textStyles } from "@/theme/typography";
 import { MOOD_OPTIONS, MoodLabel } from "./data";
 
 interface HomeMoodSelectionProps {
@@ -25,10 +25,10 @@ export default function HomeMoodSelection({
 
   return (
     <View>
-      <Text className="text-5xl leading-[56px] font-semibold " style={[typography.heading, { color: colors.onboardingWhite90 }]}>
+      <Text className="text-5xl leading-tight font-headingSemiBold" style={{ color: colors.onboardingWhite90 }}>
         What&apos;s weighing{"\n"}on you?
       </Text>
-      <Text className="mt-2 text-base text-textSecondary" style={typography.body}>
+      <Text className={`${textStyles.body} mt-2 text-textSecondary`}>
         Tap one. We&apos;ll handle the rest.
       </Text>
 
@@ -58,9 +58,9 @@ export default function HomeMoodSelection({
         <TextInput
           value={context}
           onChangeText={onChangeContext}
-          placeholder="Or tell us more... (optional)"
+          placeholder="What happened today? I'm listening... "
           placeholderTextColor={colors.textSecondary}
-          className="h-14 flex-1 text-xl"
+          className="h-14 flex-1 text-xl font-ui"
           style={{ color: colors.textPrimary }}
         />
         <Pressable
@@ -81,7 +81,7 @@ export default function HomeMoodSelection({
           className="mt-7 self-center rounded-2xl px-9 py-4"
           style={{ backgroundColor: selectedTheme?.accent ?? colors.primary }}
         >
-          <Text className="text-2xl font-semibold" style={{ color: selectedTheme?.text ?? colors.backgroundDeep }}>
+          <Text className="text-2xl font-uiSemiBold" style={{ color: selectedTheme?.text ?? colors.backgroundDeep }}>
             Find my ground {"\u2192"}
           </Text>
         </Pressable>

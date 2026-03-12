@@ -5,7 +5,6 @@ import GradientBackground from "@/components/GradientBackground";
 import { useMoodStore } from "@/store/useMoodStore";
 import { moodMap } from "@/constants/moodThemes";
 import { colors } from "@/theme/tokens";
-import { typography } from "@/theme/typography";
 
 const LOADING_STEPS = [
   "Consulting all 700 Gita verses...",
@@ -90,7 +89,7 @@ export default function Loading() {
           {moodEmoji}
         </Animated.Text>
 
-        <Text className="text-textPrimary text-xl italic text-center mt-10 leading-10" style={typography.body}>
+        <Text className="text-textPrimary text-xl italic text-center mt-10 leading-10 font-ui">
           {LOADING_STEPS[stepIndex]}
         </Text>
 
@@ -108,7 +107,7 @@ export default function Loading() {
           ))}
         </View>
 
-        <Text className="text-textMuted mt-16" style={[typography.label, { letterSpacing: 8 }]}>
+        <Text className="text-textMuted mt-16 font-ui tracking-widest">
           DHARMA AI
         </Text>
       </View>

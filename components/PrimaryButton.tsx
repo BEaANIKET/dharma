@@ -27,10 +27,7 @@ export default function PrimaryButton({
         transform: [{ scale: true && !disabled ? 0.98 : 1 }],
       }}
     >
-      <Text
-        className="text-lg italic"
-        style={{ color: disabled ? colors.textDisabled : accentColor }}
-      >
+      <Text className="text-lg font-uiItalic" style={{ color: disabled ? colors.textDisabled : accentColor }}>
         Curate my spiritual experience →
       </Text>
     </Pressable>

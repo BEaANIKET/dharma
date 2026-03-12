@@ -7,7 +7,7 @@ import FloatingOm from "../FloatingOhm";
 import TextButton from "../TextButton";
 import { colors } from "@/theme/colors";
 import SacredDateInput from "../SacredDateInput";
-import { typography } from "@/theme/typography";
+import { textStyles } from "@/theme/typography";
 
 type StepAgeProps = {
   onNext: () => void;
@@ -116,15 +116,13 @@ export default function StepAge({ onNext, onBack }: StepAgeProps) {
 
           {/* Heading */}
           <Text
-            className="text-[34px] leading-[42px] mb-4 text-onboardingWhite90"
-            style={typography.heading}
+            className="text-3xl leading-tight mb-4 text-onboardingWhite90 font-heading"
           >
             {typedHeading}
           </Text>
 
           <Text
-            className="text-[13px] leading-6 mb-12 text-onboardingWhite30"
-            style={typography.body}
+            className={`${textStyles.caption} leading-relaxed mb-12 text-onboardingWhite30`}
           >
             {typedSubText}
           </Text>

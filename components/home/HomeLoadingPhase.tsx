@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Animated, Text, View } from "react-native";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 import { LOADING_STEPS } from "./data";
 
 interface HomeLoadingPhaseProps {
@@ -45,7 +44,7 @@ export default function HomeLoadingPhase({ moodEmoji }: HomeLoadingPhaseProps) {
     <View className="mt-24 items-center px-5">
       <Animated.Text style={{ transform: [{ translateY: floatY }], fontSize: 84 }}>{moodEmoji}</Animated.Text>
 
-      <Text className="mt-10 text-center text-xl italic leading-9" style={[typography.body, { color: colors.textPrimary }]}>
+      <Text className="mt-10 text-center text-xl italic leading-9 font-ui" style={{ color: colors.textPrimary }}>
         {LOADING_STEPS[stepIndex]}
       </Text>
 

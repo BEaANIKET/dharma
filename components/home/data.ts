@@ -177,10 +177,40 @@ export const PUNYA_DEEDS = [
 ];
 
 export type ResolvedHomeRecipe = {
-  verse: { ch: number; v: number; sanskrit: string; english: string; science: string; tag: string; connection: string };
-  breathing: { name: string; pattern: string; duration: string; desc: string; science: string };
+  verse: {
+    ch: number;
+    v: number;
+    title: string;
+    subtitle: string;
+    sanskrit: string;
+    english: string;
+    science: string;
+    tag: string;
+    connection: string;
+    deeper_insights: Array<{ emoji: string; title: string; inference: string }>;
+    deeper_insights_title: string;
+  };
+  breathing: {
+    name: string;
+    pattern: string;
+    duration: string;
+    desc: string;
+    science: string;
+    emoji: string;
+    ai_impact: Array<{ emoji: string; point: string }>;
+    steps: string[];
+    breath_phases: Array<{ name: string; seconds: number; instruction: string }>;
+  };
   reflections: string[];
-  punya: string;
+  punya: {
+    title: string;
+    subtitle: string;
+    activity: string;
+    duration: string;
+    emoji: string;
+    ai_why: string;
+    ai_impact: Array<{ emoji: string; point: string }>;
+  };
 };
 
 const asRecord = (value: unknown) => (value && typeof value === "object" ? (value as Record<string, unknown>) : {});
@@ -195,6 +225,65 @@ const toNumber = (value: unknown, fallback = 0) => {
   }
   return fallback;
 };
+const toImpactList = (value: unknown): Array<{ emoji: string; point: string }> => {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => {
+      const record = asRecord(item);
+      const point = toString(record.point);
+      if (!point) return null;
+      return {
+        emoji: toString(record.emoji, "✨"),
+        point,
+      };
+    })
+    .filter((item): item is { emoji: string; point: string } => Boolean(item));
+};
+
+const toDeeperInsights = (value: unknown): Array<{ emoji: string; title: string; inference: string }> => {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => {
+      const record = asRecord(item);
+      const title = toString(record.title);
+      const inference = toString(record.inference ?? record.point ?? record.text);
+      if (!title || !inference) return null;
+      return {
+        emoji: toString(record.emoji, "✨"),
+        title,
+        inference,
+      };
+    })
+    .filter((item): item is { emoji: string; title: string; inference: string } => Boolean(item));
+};
+
+const toBreathPhases = (
+  value: unknown
+): Array<{ name: string; seconds: number; instruction: string }> => {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => {
+      const record = asRecord(item);
+      const name = toString(record.name);
+      const instruction = toString(record.instruction);
+      const seconds = toNumber(record.seconds, 0);
+      if (!name || !instruction || seconds <= 0) return null;
+      return { name, seconds, instruction };
+    })
+    .filter((item): item is { name: string; seconds: number; instruction: string } => Boolean(item));
+};
+
+const toStringList = (value: unknown): string[] => {
+  if (!Array.isArray(value)) return [];
+  return value.map((item) => toString(item)).filter((item) => item.length > 0);
+};
+
+const parseChapterVerse = (value: unknown) => {
+  if (typeof value !== "string") return { ch: 0, v: 0 };
+  const match = value.match(/(\d+)\s*[.:]\s*(\d+)/);
+  if (!match) return { ch: 0, v: 0 };
+  return { ch: Number(match[1]), v: Number(match[2]) };
+};
 
 export function resolveRecipeForMood(recipe?: RecipeApiResponse | null): ResolvedHomeRecipe | null {
   if (!recipe) return null;
@@ -203,25 +292,48 @@ export function resolveRecipeForMood(recipe?: RecipeApiResponse | null): Resolve
   const breathing = asRecord(recipe.breathing);
   const punya = asRecord(recipe.punya);
   const reflectionsRaw = recipe.reflections;
+  const parsedRef = parseChapterVerse(toString(gita.title));
+
+  const ch = toNumber(
+    gita.ch ?? gita.chapter ?? gita.chapter_no ?? gita.chapter_number ?? parsedRef.ch,
+    0
+  );
+  const v = toNumber(
+    gita.v ?? gita.verse ?? gita.verse_no ?? gita.verse_number ?? parsedRef.v,
+    0
+  );
 
   const resolvedVerse = {
-    ch: toNumber(gita.chapter ?? gita.ch, 0),
-    v: toNumber(gita.verse ?? gita.verse_number ?? gita.v, 0),
-    sanskrit: toString(gita.sanskrit_text ?? gita.sanskrit),
+    ch,
+    v,
+    title: toString(gita.title),
+    subtitle: toString(gita.subtitle),
+    sanskrit: toString(gita.sanskrit_text),
     english: toString(gita.english_translation ?? gita.english ?? gita.translation),
-    science: toString(gita.science ?? gita.neuroscience ?? gita.why ?? gita.commentary),
-    tag: toString(gita.tag ?? gita.domain ?? gita.activity_type, "Neuroscience"),
-    connection: toString(gita.connection ?? gita.commentary ?? gita.why),
+    science: toString(gita.science ?? gita.neuroscience ?? gita.ai_why ?? gita.why ?? gita.commentary),
+    tag: toString(gita.tag ?? gita.domain ?? gita.activity_type, "GITA"),
+    connection: toString(gita.connection ?? gita.commentary ?? gita.why ?? gita.ai_why),
+    deeper_insights: toDeeperInsights(gita.deeper_insights),
+    deeper_insights_title: toString(gita.deeper_insights_title),
   };
 
   const resolvedBreathing = {
-    name: toString(breathing.title ?? breathing.name),
-    pattern: toString(breathing.pattern ?? breathing.subtitle),
+    name: toString(breathing.title),
+    pattern: toString(breathing.pattern ?? breathing.subtitle ?? breathing.animation),
+    subtitle: toString(breathing.subtitle),
     duration: toString(
-      breathing.duration ?? (typeof breathing.duration_mins === "number" ? `${breathing.duration_mins} min` : "")
+      breathing.duration ??
+        (typeof breathing.duration_mins === "number" ? `${breathing.duration_mins} min` : "") ??
+        (typeof breathing.duration_seconds === "number" ? `${Math.round(breathing.duration_seconds / 60)} min` : "")
     ),
-    desc: toString(breathing.instructions ?? breathing.desc ?? breathing.short_descp),
-    science: toString(breathing.science ?? breathing.why),
+    desc: toString(
+      breathing.instructions ?? breathing.desc ?? breathing.short_descp ?? breathing.context?.short_descp
+    ),
+    science: toString(breathing.science ?? breathing.ai_why ?? breathing.why),
+    emoji: toString(breathing.emoji, "🫁"),
+    ai_impact: toImpactList(breathing.ai_impact),
+    steps: toStringList(breathing.steps),
+    breath_phases: toBreathPhases(breathing.breath_phases),
   };
 
   const resolvedReflections = Array.isArray(reflectionsRaw)
@@ -234,20 +346,33 @@ export function resolveRecipeForMood(recipe?: RecipeApiResponse | null): Resolve
         .filter((item) => item.length > 0)
     : [];
 
-  const resolvedPunya = toString(
-    punya.title ?? punya.activity ?? punya.action_text ?? punya.action ?? punya.short_descp ?? punya.why
-  );
+  const resolvedPunya = {
+    title: toString(punya.title),
+    subtitle: toString(punya.subtitle),
+    activity: toString(
+      punya.activity ??
+        punya.action_text ??
+        punya.action ??
+        punya.short_descp ??
+        punya.why ??
+        punya.ai_why
+    ),
+    duration: toString(
+      punya.duration ?? (typeof punya.duration_mins === "number" ? `${punya.duration_mins} min` : "")
+    ),
+    emoji: toString(punya.emoji, "🌻"),
+    ai_why: toString(punya.ai_why ?? punya.why),
+    ai_impact: toImpactList(punya.ai_impact),
+  };
 
   if (
-    resolvedVerse.ch <= 0 ||
-    resolvedVerse.v <= 0 ||
     !resolvedVerse.sanskrit ||
     !resolvedVerse.english ||
     !resolvedBreathing.name ||
-    !resolvedBreathing.pattern ||
     !resolvedBreathing.duration ||
     !resolvedBreathing.desc ||
-    !resolvedPunya ||
+    !resolvedPunya.title ||
+    !resolvedPunya.activity ||
     resolvedReflections.length === 0
   ) {
     return null;

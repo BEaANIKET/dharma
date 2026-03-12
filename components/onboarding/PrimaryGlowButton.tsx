@@ -36,7 +36,7 @@ export default function PrimaryGlowButton({
         }}
       >
         <Text
-          className="text-base font-semibold tracking-wide"
+          className="text-base font-uiSemiBold tracking-wide"
           style={{ color: isDisabled ? colors.textDisabled : colors.backgroundDeep }}
         >
           {label}

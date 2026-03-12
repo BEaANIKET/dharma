@@ -29,7 +29,6 @@ import {
   onboardingVerses as VERSES,
 } from "@/theme/onboarding";
 import GradientBackground from "@/components/GradientBackground";
-import { fontFamilies } from "@/theme/typography";
 
 const {
   INTRO_MAX_MS,
@@ -488,7 +487,7 @@ export default function OnboardingWelcome() {
   return (
     <GradientBackground>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
       >
@@ -529,7 +528,6 @@ export default function OnboardingWelcome() {
                 verseTextOp={verseTextOp}
                 verseLabel={VERSES[Math.min(verseIdx, VERSES.length - 1)].label}
                 typedText={typedText}
-                serif={SERIF}
               />
             )}
 
@@ -549,8 +547,6 @@ export default function OnboardingWelcome() {
                 btnTY={btnTY}
                 typedHeadline={typedHeadline}
                 typedSubText={typedSubText}
-                serif={SERIF}
-                sans={SANS}
                 otp={otp}
                 setOtp={setOtp}
                 otpSent={otpSent}
@@ -566,13 +562,12 @@ export default function OnboardingWelcome() {
             {phase === "video" && (
               <WelcomeSkipButton
                 topInset={insets.top}
-                sans={SANS}
                 onPress={onVideoEnd}
               />
             )}
 
             {!isVideoReady && (
-              <View style={[StyleSheet.absoluteFill, { zIndex: 30 }]}>
+              <View className="absolute inset-0 z-30">
                 <StartupLoader
                   message="Starting mydharma..."
                   subMessage="Loading welcome experience"
@@ -587,8 +582,6 @@ export default function OnboardingWelcome() {
   );
 }
 /* ─── Styles ──────────────────────────────────────────────────── */
-const SERIF = fontFamilies.heading;
-const SANS = fontFamilies.ui;
 
 function toE164Indian(rawPhone: string) {
   const trimmed = rawPhone.trim();

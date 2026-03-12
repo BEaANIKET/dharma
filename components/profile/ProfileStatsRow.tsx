@@ -1,7 +1,6 @@
 import { Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 import { STATS } from "./data";
 
 interface ProfileStatsRowProps {
@@ -22,10 +21,10 @@ export default function ProfileStatsRow({ values }: ProfileStatsRowProps) {
           style={{ borderColor: colors.cardBorder, backgroundColor: colors.backgroundSoft }}
         >
           <Ionicons name={stat.icon} size={18} color={stat.color} />
-          <Text className="mt-2 text-3xl leading-8" style={[typography.heading, { color: colors.textPrimary }]}>
+          <Text className="mt-2 text-3xl leading-8 font-heading" style={{ color: colors.textPrimary }}>
             {values[stat.key]}
           </Text>
-          <Text className="mt-1 text-center text-[10px]" style={{ color: colors.textMuted }}>
+          <Text className="mt-1 text-center text-xs font-ui" style={{ color: colors.textMuted }}>
             {stat.label}
           </Text>
         </View>
