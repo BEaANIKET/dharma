@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import GradientBackground from "@/components/GradientBackground";
-import HomeContentPhase from "@/components/home/HomeContentPhase";
+import HomeContentPhase, { HomeContentTopBar } from "@/components/home/HomeContentPhase";
 import HomeLoadingPhase from "@/components/home/HomeLoadingPhase";
 import HomeMoodSelection from "@/components/home/HomeMoodSelection";
 import { MainType, MOOD_OPTIONS, MoodLabel, resolveRecipeForMood, ThumbDirection } from "@/components/home/data";
@@ -44,11 +44,10 @@ export default function MoodScreen() {
   };
 
   const submitMood = async () => {
-    if (!moodLabel) {
-      return;
-    }
+    if (!moodLabel) return;
+
     clearTimers();
-    setMainType("verse") ;
+    setMainType("verse");
     setBreathingActive(false);
     setIsPlaying(false);
     setRecipeError(null);
@@ -67,7 +66,9 @@ export default function MoodScreen() {
         }),
         loadingDelay,
       ]);
+
       setRecipeResponse(response);
+
       if (!resolveRecipeForMood(response)) {
         console.log("[Home] Incomplete /recipe payload", {
           mood: moodLabel,
@@ -82,6 +83,7 @@ export default function MoodScreen() {
         context: context.trim(),
         error,
       });
+
       setRecipeError(friendlyMessage(error));
       await loadingDelay;
     }
@@ -102,7 +104,10 @@ export default function MoodScreen() {
   };
 
   const handleThumb = (id: string, direction: ThumbDirection) => {
-    setThumbs((prev) => ({ ...prev, [id]: prev[id] === direction ? null : direction }));
+    setThumbs((prev) => ({
+      ...prev,
+      [id]: prev[id] === direction ? null : direction,
+    }));
   };
 
   useEffect(() => {
@@ -114,11 +119,23 @@ export default function MoodScreen() {
       <ScrollView
         ref={scrollRef}
         className="flex-1 px-5"
-        contentContainerStyle={{ paddingTop: insets.top + 14, paddingBottom: insets.bottom + 30 }}
+        contentContainerStyle={{
+          paddingTop: 14,
+          paddingBottom: insets.bottom + 30,
+        }}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
+        stickyHeaderIndices={phase === "content" && moodLabel ? [0] : undefined}
       >
+        {phase === "content" && moodLabel ? (
+          <HomeContentTopBar
+            moodLabel={moodLabel}
+            moodEmoji={moodEmoji}
+            onReset={resetFlow}
+          />
+        ) : null}
+
         {phase === "selection" ? (
           <HomeMoodSelection
             selectedMood={moodLabel}
@@ -129,7 +146,9 @@ export default function MoodScreen() {
           />
         ) : null}
 
-        {phase === "loading" ? <HomeLoadingPhase moodEmoji={moodEmoji} /> : null}
+        {phase === "loading" ? (
+          <HomeLoadingPhase moodEmoji={moodEmoji} />
+        ) : null}
 
         {phase === "content" && moodLabel ? (
           <HomeContentPhase
@@ -139,7 +158,9 @@ export default function MoodScreen() {
             recipe={resolvedRecipe}
             recipeError={recipeError}
             onRetryRecipe={submitMood}
-            onRequestScrollTo={(y) => scrollRef.current?.scrollTo({ y, animated: true })}
+            onRequestScrollTo={(y) =>
+              scrollRef.current?.scrollTo({ y, animated: true })
+            }
             isPlaying={isPlaying}
             breathingActive={breathingActive}
             thumbs={thumbs}
@@ -147,6 +168,7 @@ export default function MoodScreen() {
             onTogglePlay={() => setIsPlaying((prev) => !prev)}
             onToggleBreathing={() => setBreathingActive((prev) => !prev)}
             onThumb={handleThumb}
+            hideTopBar
           />
         ) : null}
       </ScrollView>

@@ -95,7 +95,7 @@ export default function HomeAlsoToday({ mainType, recipe, thumbs, onThumb }: Hom
 
         {reflections.map((reflection, index) => (
           <View
-            key={`${reflection}-${index}`}
+            key={`${reflection.question}-${index}`}
             className="rounded-xl border px-3 py-3"
             style={{
               borderColor: colors.cardBorder,
@@ -103,9 +103,12 @@ export default function HomeAlsoToday({ mainType, recipe, thumbs, onThumb }: Hom
               marginBottom: index === reflections.length - 1 ? 0 : 8,
             }}
           >
-            <Text className="text-sm leading-6 font-uiItalic" style={{ color: colors.textSecondary }}>
-              &quot;{reflection}&quot;
-            </Text>
+            <View className="flex-row items-start gap-2">
+              <Text className="text-base">{reflection.emoji}</Text>
+              <Text className="flex-1 text-sm leading-6 font-uiItalic" style={{ color: colors.textSecondary }}>
+                &quot;{reflection.question}&quot;
+              </Text>
+            </View>
           </View>
         ))}
       </View>

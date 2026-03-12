@@ -14,7 +14,7 @@ export default function TabsLayout() {
           backgroundColor: colors.background,
         },
         headerTitle: () => (
-          <View style={{ marginTop: 4 }}>
+          <View className=" px-4 ">
             <FloatingOm size={20} opacity={1} />
           </View>
         ),
@@ -24,7 +24,7 @@ export default function TabsLayout() {
           height: 78,
           paddingTop: 8,
           paddingBottom: 10,
-          paddingHorizontal: 14,
+          // paddingHorizontal: 0,
         },
         tabBarLabelStyle: {
           fontSize: 13,

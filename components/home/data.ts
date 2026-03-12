@@ -180,6 +180,7 @@ export type ResolvedHomeRecipe = {
   verse: {
     ch: number;
     v: number;
+    emoji: string;
     title: string;
     subtitle: string;
     sanskrit: string;
@@ -193,6 +194,7 @@ export type ResolvedHomeRecipe = {
   breathing: {
     name: string;
     pattern: string;
+    subtitle: string;
     duration: string;
     desc: string;
     science: string;
@@ -201,7 +203,7 @@ export type ResolvedHomeRecipe = {
     steps: string[];
     breath_phases: Array<{ name: string; seconds: number; instruction: string }>;
   };
-  reflections: string[];
+  reflections: Array<{ emoji: string; question: string }>;
   punya: {
     title: string;
     subtitle: string;
@@ -306,6 +308,7 @@ export function resolveRecipeForMood(recipe?: RecipeApiResponse | null): Resolve
   const resolvedVerse = {
     ch,
     v,
+    emoji: toString(gita.emoji, "📖"),
     title: toString(gita.title),
     subtitle: toString(gita.subtitle),
     sanskrit: toString(gita.sanskrit_text),
@@ -339,11 +342,19 @@ export function resolveRecipeForMood(recipe?: RecipeApiResponse | null): Resolve
   const resolvedReflections = Array.isArray(reflectionsRaw)
     ? reflectionsRaw
         .map((item) => {
-          if (typeof item === "string") return toString(item);
+          if (typeof item === "string") {
+            const question = toString(item);
+            return question ? { emoji: "🪷", question } : null;
+          }
           const record = asRecord(item);
-          return toString(record.question ?? record.prompt ?? record.text);
+          const question = toString(record.question ?? record.prompt ?? record.text);
+          if (!question) return null;
+          return {
+            emoji: toString(record.emoji, "🪷"),
+            question,
+          };
         })
-        .filter((item) => item.length > 0)
+        .filter((item): item is { emoji: string; question: string } => Boolean(item))
     : [];
 
   const resolvedPunya = {

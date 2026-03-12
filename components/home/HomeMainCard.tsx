@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Animated, Dimensions, Easing, Pressable, ScrollView, Text, View } from "react-native";
-import { colors } from "@/theme/colors";
 import { textStyles } from "@/theme/typography";
 import BreathingVisual from "./BreathingVisual";
 import { MainType, ThumbDirection, ResolvedHomeRecipe } from "./data";
@@ -56,12 +55,9 @@ function AudioWaveform({ isPlaying }: { isPlaying: boolean }) {
       {animations.map((anim, index) => (
         <Animated.View
           key={index}
-          className="bg-primary"
+          className="bg-primary w-[3px] h-4 rounded-[2px]"
           style={{
-            width: 3,
-            height: 16,
             transform: [{ scaleY: anim }],
-            borderRadius: 2,
           }}
         />
       ))}
@@ -96,8 +92,8 @@ export default function HomeMainCard({
       <View>
         <ScrollView
           showsVerticalScrollIndicator={false}
-          className="rounded-3xl border p-4 "
-          style={{ width: CARD_WIDTH, borderColor: colors.cardBorder, backgroundColor: colors.backgroundSoft, minHeight: 660 }}
+          className="rounded-3xl border border-cardBorder bg-backgroundSoft p-4"
+          style={{ width: CARD_WIDTH, minHeight: 660 }}
         >
           <Text className="text-xs uppercase tracking-widest font-uiSemiBold text-textMuted">FOR YOU RIGHT NOW</Text>
 
@@ -126,7 +122,7 @@ export default function HomeMainCard({
             </Pressable>
           </View>
 
-          <View className="mt-6 rounded-2xl border p-5 items-center" style={{ borderColor: colors.cardBorder }}>
+          <View className="mt-6 rounded-2xl border border-cardBorder bg-backgroundElevated p-5 items-center">
             <Text className="text-center text-lg leading-relaxed text-textPrimary font-devanagari">
               {verse.sanskrit}
             </Text>
@@ -135,8 +131,8 @@ export default function HomeMainCard({
             </Text>
           </View>
 
-          <View className="mt-4 rounded-2xl border p-5 items-center" style={{ borderColor: colors.cardBorder }}>
-            <View className=" rounded-2xl px-5 py-3 items-center mb-5 border border-cardBorder">
+          <View className="mt-4 rounded-2xl border bg-backgroundElevated border-cardBorder p-5 items-center">
+            <View className="rounded-2xl px-5 py-3 items-center mb-5 border border-cardBorder">
               <Text className="text-lg mb-1">🧠</Text>
               <Text className={`${textStyles.label} text-primary uppercase`}>
                 Decode the Wisdom
@@ -150,13 +146,13 @@ export default function HomeMainCard({
             </Text>
           </View>
 
-          <View className="mt-5 rounded-2xl border p-5" style={{ borderColor: colors.cardBorder }}>
+          <View className="mt-8 rounded-2xl  ">
             <View className="flex-row items-center mb-4">
               <Text className="text-xl mr-3">🔔</Text>
               <View>
                 <Text className="text-base font-uiBold text-textPrimary">{verse.deeper_insights_title || "Deeper Insight"}</Text>
                 <Text className="text-xs font-ui text-textSecondary">
-                  Exploring the layers of this teaching
+                  The ocean doesn't ask the rivers to stop.
                 </Text>
               </View>
             </View>
@@ -164,7 +160,7 @@ export default function HomeMainCard({
             {insights.map((insight, index) => (
               <View
                 key={`${insight.title}-${index}`}
-                className="rounded-xl px-4 py-2 mb-2 bg-backgroundSoft border border-cardBorder"
+                className="rounded-xl px-4 py-2 mb-2 bg-backgroundElevated border border-cardBorder"
               >
                 <Pressable
                   onPress={() =>
@@ -194,9 +190,15 @@ export default function HomeMainCard({
 // --- Internal Helper: Breathing Card Implementation ---
 function BreathingCard({ breathing, breathingActive, onToggleBreathing }: any) {
   const phases = useMemo(() => {
+    if (Array.isArray(breathing.breath_phases) && breathing.breath_phases.length > 0) {
+      return breathing.breath_phases.map((phase: { name: string; seconds: number }) => ({
+        label: phase.name,
+        seconds: phase.seconds,
+      }));
+    }
     // Basic parser for pattern "4-4-4" etc
     return [{ label: "INHALE", seconds: 4 }, { label: "HOLD", seconds: 4 }, { label: "EXHALE", seconds: 6 }];
-  }, []);
+  }, [breathing.breath_phases]);
 
   const scrollRef = useRef<ScrollView>(null);
   const scale = useRef(new Animated.Value(1)).current;
@@ -217,7 +219,10 @@ function BreathingCard({ breathing, breathingActive, onToggleBreathing }: any) {
     <View>
       <View className="mb-4 flex-row items-center justify-center gap-[6px]">
         {[0, 1].map((dot) => (
-          <View key={dot} style={{ width: page === dot ? 20 : 6, height: 6, borderRadius: 999, backgroundColor: page === dot ? colors.breathingMint : "rgba(78,205,196,0.25)" }} />
+          <View
+            key={dot}
+            className={`h-[6px] rounded-full ${page === dot ? "w-5 bg-breathingMint" : "w-[6px] bg-[rgba(78,205,196,0.25)]"}`}
+          />
         ))}
       </View>
 
@@ -228,42 +233,71 @@ function BreathingCard({ breathing, breathingActive, onToggleBreathing }: any) {
         pagingEnabled
         onScroll={(e) => setPage(Math.round(e.nativeEvent.contentOffset.x / CARD_WIDTH))}
         scrollEventThrottle={16}
-        contentContainerStyle={{ gap: 16 }}
+        contentContainerClassName="gap-4"
       >
         {/* Breathing Page 1 */}
-        <View className="rounded-3xl border px-7 pt-10 pb-8" style={{ width: CARD_WIDTH, borderColor: "rgba(78,205,196,0.2)", backgroundColor: colors.backgroundSoft, minHeight: 660 }}>
+        <View className="rounded-3xl border border-[rgba(78,205,196,0.2)] bg-backgroundSoft p-4" style={{ width: CARD_WIDTH, minHeight: 620 }}>
           <Text className="text-xs uppercase tracking-widest font-uiSemiBold text-textMuted">FOR YOU RIGHT NOW</Text>
           <View className="mt-3 flex-row items-center gap-[14px]">
-            <View className="h-12 w-12 items-center justify-center rounded-[14px]" style={{ backgroundColor: "rgba(78,205,196,0.12)" }}>
+            <View className="h-12 w-12 items-center justify-center rounded-2xl bg-backgroundElevated">
               <Text className="text-2xl">{breathing.emoji}</Text>
             </View>
             <View className="flex-1">
               <Text className="text-2xl font-headingBold text-textPrimary">{breathing.name}</Text>
-              <Text className="text-sm text-textSecondary">{breathing.desc}</Text>
+              <Text className="mt-1 text-xs text-textMuted">{breathing.pattern} · {breathing.duration}</Text>
             </View>
           </View>
 
-          <Pressable onPress={onToggleBreathing} className="items-center py-10">
+          <Pressable onPress={onToggleBreathing} className="items-center py-8">
             <BreathingVisual active={breathingActive} tried={tried} scale={scale} secondsLeft={secondsLeft} />
           </Pressable>
 
-          <View className="flex-1">
-            <Text className="text-xl leading-relaxed font-headingSemiBoldItalic text-textSecondary">{breathing.science}</Text>
+          <View className="rounded-2xl border border-cardBorder bg-backgroundElevated p-4">
+            <Text className="text-xs uppercase tracking-widest font-uiSemiBold text-textMuted">WHY THIS HELPS</Text>
+            <Text className="mt-2 text-sm leading-relaxed text-textSecondary">{breathing.science}</Text>
           </View>
 
-          <Pressable onPress={handleTried} className="bg-primary rounded-2xl py-[17px] items-center">
+          {Array.isArray(breathing.steps) && breathing.steps.length > 0 ? (
+            <View className="mt-3 rounded-2xl border border-cardBorder bg-backgroundElevated p-4">
+              <Text className="text-xs uppercase tracking-widest font-uiSemiBold text-textMuted">STEPS</Text>
+              <View className="mt-3 gap-2">
+                {breathing.steps.map((step: string, index: number) => (
+                  <View key={`${step}-${index}`} className="flex-row items-start gap-3">
+                    <Text className="text-xs text-textMuted">{index + 1}.</Text>
+                    <Text className="flex-1 text-sm leading-relaxed text-textSecondary">{step}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          ) : null}
+
+          <Pressable onPress={handleTried} className="bg-primary rounded-2xl py-[15px] mt-4 items-center">
             <Text className="text-lg font-uiBold text-backgroundDeep">I did this practice</Text>
           </Pressable>
         </View>
 
         {/* Breathing Page 2 (Stats) */}
-        <View className="rounded-3xl border px-6 pt-8 pb-7" style={{ width: CARD_WIDTH, borderColor: colors.cardBorder, backgroundColor: colors.backgroundSoft }}>
+        <View className="rounded-3xl border border-cardBorder bg-backgroundSoft px-6 pt-8 pb-7" style={{ width: CARD_WIDTH }}>
            <Text className="text-xs uppercase tracking-widest font-uiSemiBold text-textMuted">WHAT JUST HAPPENED</Text>
-           <View className="mt-8 gap-6">
-              <Text className="text-base leading-relaxed text-textSecondary font-uiItalic">
+           {/* <View className="mt-8 gap-6"> */}
+              {/* <Text className="text-base leading-relaxed text-textSecondary font-uiItalic">
                 Slow breathing can help shift your nervous system toward calm and reduce stress load.
               </Text>
-           </View>
+           </View> */}
+
+           {tried && Array.isArray(breathing.ai_impact) && breathing.ai_impact.length > 0 ? (
+             <View className="mt-6 rounded-2xl">
+               <Text className="text-xs uppercase tracking-widest font-uiSemiBold text-textMuted">IMPACT</Text>
+               <View className="mt-3 gap-4">
+                 {breathing.ai_impact.map((impact: { emoji: string; point: string }, index: number) => (
+                   <View key={`${impact.point}-${index}`} className="flex-row border border-cardBorder bg-backgroundElevated rounded-2xl p-2 items-start gap-3">
+                     <Text className="text-lg">{impact.emoji}</Text>
+                     <Text className="flex-1 text-sm leading-relaxed text-textSecondary">{impact.point}</Text>
+                   </View>
+                 ))}
+               </View>
+             </View>
+           ) : null}
         </View>
       </ScrollView>
     </View>
