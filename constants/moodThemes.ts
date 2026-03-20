@@ -1,5 +1,3 @@
-import { colors } from "@/theme/tokens";
-
 export type MoodTheme = {
   label: string;
   emoji: string;
@@ -9,12 +7,12 @@ export type MoodTheme = {
 };
 
 export const MOODS: MoodTheme[] = [
-  { label: "Anxious", emoji: "😰", accent: colors.accentIndigo, soft: colors.backgroundElevated, border: colors.accentIndigo },
-  { label: "Hopeful", emoji: "😊", accent: colors.accentSage, soft: colors.backgroundElevated, border: colors.accentSageDeep },
-  { label: "Sad", emoji: "😢", accent: colors.accentIndigo, soft: colors.backgroundElevated, border: colors.accentIndigo },
-  { label: "Angry", emoji: "😡", accent: colors.accentRose, soft: colors.backgroundElevated, border: colors.accentRose },
-  { label: "Grateful", emoji: "🙏", accent: colors.primary, soft: colors.backgroundElevated, border: colors.primarySoft },
-  { label: "Tired", emoji: "😴", accent: colors.accentIndigo, soft: colors.backgroundElevated, border: colors.accentIndigo },
+  { label: "Anxious", emoji: "😰", accent: "#9B8EC4", soft: "#1a1a38", border: "#252545" },
+  { label: "Hopeful", emoji: "😊", accent: "#4ECDC4", soft: "#1a1a38", border: "#252545" },
+  { label: "Sad", emoji: "😢", accent: "#9B8EC4", soft: "#1a1a38", border: "#252545" },
+  { label: "Angry", emoji: "😡", accent: "#C94058", soft: "#1a1a38", border: "#252545" },
+  { label: "Grateful", emoji: "🙏", accent: "#FFD25A", soft: "#1a1a38", border: "#252545" },
+  { label: "Tired", emoji: "😴", accent: "#9B8EC4", soft: "#1a1a38", border: "#252545" },
 ];
 
 export const moodMap = Object.fromEntries(

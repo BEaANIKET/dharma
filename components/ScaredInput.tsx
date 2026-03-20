@@ -67,15 +67,12 @@ export default function SacredInput({
   };
 
   return (
-    <View className="w-full mb-6">
+    <View className="w-full  mb-6">
       {label && (
         <Text
-          className="mb-2 text-xs uppercase tracking-widest font-ui"
-          style={{
-            color: focused
-              ? activeLabelColor ?? underlineColor
-              : labelColor,
-          }}
+          className={`mb-2 text-xs uppercase tracking-widest font-ui ${
+            focused ? "text-accent-primary dark:text-accent-primary-dark" : "text-text-secondary/70 dark:text-text-secondary-dark/50"
+          }`}
         >
           {label}
         </Text>
@@ -84,10 +81,7 @@ export default function SacredInput({
       <View className="flex-row items-center">
         {prefixText ? (
           <Text
-            className="mr-2 text-lg font-ui"
-            style={{
-              color: prefixColor ?? textColor,
-            }}
+            className="mr-2 text-lg font-ui text-text-primary dark:text-text-primary-dark"
           >
             {prefixText}
           </Text>
@@ -95,29 +89,19 @@ export default function SacredInput({
 
         <TextInput
           {...props}
-          className="flex-1 text-lg py-2 font-ui"
-          style={[
-            {
-              color: textColor,
-            },
-            style,
-          ]}
+          className="flex-1 text-lg py-2 font-uitext-text-primary dark:text-text-primary-dark placeholder:text-text-primary dark:placeholder:text-text-primary-dark/35"          // style={style}
           onFocus={onFocus}
           onBlur={onBlur}
         />
       </View>
 
       {/* Base underline */}
-      <View
-        className="h-px w-full mt-2"
-        style={{ backgroundColor: underlineBaseColor }}
-      />
+      <View className="h-px w-full mt-2 bg-border dark:bg-border-dark" />
 
       {/* Animated gold underline */}
       <Animated.View
-        className="absolute bottom-0 h-[1.5px] w-full"
+        className="absolute bottom-0 h-[1.5px] w-full bg-accent-primary dark:bg-accent-primary-dark"
         style={{
-          backgroundColor: underlineColor,
           opacity: underlineOp,
           transform: [{ scaleX: underlineScale }],
         }}
@@ -125,8 +109,7 @@ export default function SacredInput({
 
       {error && (
         <Text
-          className="mt-2 text-xs font-ui"
-          style={{ color: errorColor }}
+          className="mt-2 text-xs font-ui text-error dark:text-error-dark"
         >
           {error}
         </Text>

@@ -18,19 +18,19 @@ export default function WelcomeVerseOverlay({
 }: WelcomeVerseOverlayProps) {
   return (
     <Animated.View
-      className="absolute inset-0 items-start justify-end px-8 pb-24"
-      style={{ opacity: overlayOp }}
+      className="absolute inset-0 items-start justify-center px-8"
+      style={{ opacity: overlayOp, paddingTop: "10%" }}
       pointerEvents="none"
     >
       <Animated.Text
-        className="mb-[14px] text-left text-xs uppercase tracking-widest font-heading"
-        style={{ opacity: labelOp, color: C.verseLabel }}
+        className="mb-3 text-left text-xs uppercase text-primary dark:text-primary-dark tracking-widest font-heading"
+        style={{ opacity: labelOp }}
       >
         {verseLabel}
       </Animated.Text>
       <Animated.Text
-        className="text-left text-lg italic leading-relaxed tracking-wide font-headingItalic"
-        style={{ opacity: verseTextOp, color: C.verseText }}
+        className="text-left text-3xl leading-[1.4] text-primary dark:text-primary-dark tracking-wide font-headingMediumItalic"
+        style={{ opacity: verseTextOp }}
       >
         {typedText}
       </Animated.Text>

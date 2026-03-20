@@ -5,9 +5,7 @@ import { Audio } from "expo-av";
 import SacredInput from "../ScaredInput";
 import FloatingOm from "../FloatingOhm";
 import TextButton from "../TextButton";
-import { colors } from "@/theme/colors";
 import SacredDateInput from "../SacredDateInput";
-import { textStyles } from "@/theme/typography";
 
 type StepAgeProps = {
   onNext: () => void;
@@ -114,16 +112,17 @@ export default function StepAge({ onNext, onBack }: StepAgeProps) {
       >
         <View className="flex-1 justify-center ">
 
+          {/* Step label */}
+          <Text className="mb-8 text-xs uppercase tracking-[0.2em] font-ui text-accent-secondary dark:text-accent-secondary-dark opacity-70">
+            step 2 of 2  ·  your origins
+          </Text>
+
           {/* Heading */}
-          <Text
-            className="text-3xl leading-tight mb-4 text-onboardingWhite90 font-heading"
-          >
+          <Text className="text-4xl leading-tight mb-4 font-headingMediumItalic text-text-primary dark:text-text-primary-dark">
             {typedHeading}
           </Text>
 
-          <Text
-            className={`${textStyles.caption} leading-relaxed mb-12 text-onboardingWhite30`}
-          >
+          <Text className="text-sm leading-relaxed mb-10 font-heading text-text-secondary dark:text-text-secondary-dark">
             {typedSubText}
           </Text>
 
@@ -134,11 +133,6 @@ export default function StepAge({ onNext, onBack }: StepAgeProps) {
               label="DATE OF BIRTH"
               value={dob}
               onChange={setDob}
-              labelColor={colors.onboardingGoldLabel}
-              activeLabelColor={colors.primary}
-              textColor={colors.onboardingWhite90}
-              underlineColor={colors.primary}
-              underlineBaseColor={colors.onboardingWhite10}
             />
           </View>
 
@@ -149,12 +143,7 @@ export default function StepAge({ onNext, onBack }: StepAgeProps) {
               value={city}
               onChangeText={setCity}
               placeholder="where do you live?"
-              placeholderTextColor={colors.onboardingWhite18}
-              labelColor={colors.onboardingGoldLabel}
-              activeLabelColor={colors.primary}
-              textColor={colors.onboardingWhite90}
-              underlineColor={colors.primary}
-              underlineBaseColor={colors.onboardingWhite06}
+              placeholderTextColor="#a8a4a0"
             />
           </View>
 

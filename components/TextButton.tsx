@@ -1,5 +1,4 @@
 import { Pressable, Text } from "react-native";
-import { colors } from "@/theme/colors";
 
 type TextButtonProps = {
   label: string;
@@ -29,12 +28,7 @@ export default function TextButton({
       })}
     >
       <Text
-        className="text-lg tracking-wide font-uiItalic"
-        style={{
-          color: !disabled
-            ? colors.primary
-            : colors.onboardingGoldLabel,
-        }}
+        className={`text-lg tracking-wide font-uiItalic ${disabled ? "text-text-secondary/70 dark:text-text-secondary-dark/50" : "text-accent-primary dark:text-accent-primary-dark"}`}
       >
         {direction === "back" ? arrow + label : label + arrow}
       </Text>

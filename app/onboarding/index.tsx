@@ -466,12 +466,8 @@ export default function OnboardingWelcome() {
       try {
         await stopVideo();
       } catch {}
-      if (result.isNewUser) {
-        router.replace("/onboarding/details");
-        return;
-      }
-      markCompleted();
-      router.replace("/(tabs)/home");
+      // TODO: restore isNewUser check — bypassed for testing details flow
+      router.replace("/onboarding/details");
     } catch {
       // handled by store
     }

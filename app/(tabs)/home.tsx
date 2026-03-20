@@ -5,20 +5,20 @@ import GradientBackground from "@/components/GradientBackground";
 import HomeContentPhase, { HomeContentTopBar } from "@/components/home/HomeContentPhase";
 import HomeLoadingPhase from "@/components/home/HomeLoadingPhase";
 import HomeMoodSelection from "@/components/home/HomeMoodSelection";
-import { MainType, MOOD_OPTIONS, MoodLabel, resolveRecipeForMood, ThumbDirection } from "@/components/home/data";
+import { MainType, resolveRecipeForMood, ThumbDirection } from "@/components/home/data";
 import { friendlyMessage, recipeApi, RecipeApiResponse } from "@/services/api";
 import { useMoodStore } from "@/store/useMoodStore";
+import { useMetadataStore } from "@/store/useMetadataStore";
 
 type HomePhase = "selection" | "loading" | "content";
-
-function isMoodLabel(value: string | null): value is MoodLabel {
-  return MOOD_OPTIONS.some((mood) => mood.label === value);
-}
 
 export default function MoodScreen() {
   const selectedMood = useMoodStore((state) => state.selectedMood);
   const setMood = useMoodStore((state) => state.setMood);
   const insets = useSafeAreaInsets();
+
+  const fetchMetadata = useMetadataStore((s) => s.fetchMetadata);
+  const getMoodByValue = useMetadataStore((s) => s.getMoodByValue);
 
   const [phase, setPhase] = useState<HomePhase>("selection");
   const [context, setContext] = useState("");
@@ -32,9 +32,14 @@ export default function MoodScreen() {
   const loadingTimerRef = useRef<ReturnType<typeof globalThis.setTimeout> | null>(null);
   const scrollRef = useRef<ScrollView | null>(null);
 
-  const moodLabel = isMoodLabel(selectedMood) ? selectedMood : null;
-  const moodEmoji = moodLabel ? MOOD_OPTIONS.find((mood) => mood.label === moodLabel)?.emoji ?? "🕉️" : "🕉️";
+  const selectedMoodData = selectedMood ? getMoodByValue(selectedMood) : undefined;
+  const moodLabel = selectedMoodData?.label ?? null;
+  const moodEmoji = selectedMoodData?.emoji ?? "🕉️";
   const resolvedRecipe = useMemo(() => resolveRecipeForMood(recipeResponse), [recipeResponse]);
+
+  useEffect(() => {
+    fetchMetadata();
+  }, [fetchMetadata]);
 
   const clearTimers = () => {
     if (loadingTimerRef.current) {
@@ -44,7 +49,7 @@ export default function MoodScreen() {
   };
 
   const submitMood = async () => {
-    if (!moodLabel) return;
+    if (!selectedMood) return;
 
     clearTimers();
     setMainType("verse");
@@ -61,7 +66,7 @@ export default function MoodScreen() {
     try {
       const [response] = await Promise.all([
         recipeApi.getRecipe({
-          mood: moodLabel.toLowerCase(),
+          mood: selectedMood.toLowerCase(),
           feelings: context.trim(),
         }),
         loadingDelay,
@@ -71,7 +76,7 @@ export default function MoodScreen() {
 
       if (!resolveRecipeForMood(response)) {
         console.log("[Home] Incomplete /recipe payload", {
-          mood: moodLabel,
+          mood: selectedMood,
           context: context.trim(),
           response,
         });
@@ -79,7 +84,7 @@ export default function MoodScreen() {
       }
     } catch (error) {
       console.log("[Home] /recipe request failed", {
-        mood: moodLabel,
+        mood: selectedMood,
         context: context.trim(),
         error,
       });
@@ -138,7 +143,7 @@ export default function MoodScreen() {
 
         {phase === "selection" ? (
           <HomeMoodSelection
-            selectedMood={moodLabel}
+            selectedMood={selectedMood}
             context={context}
             onChangeContext={setContext}
             onSelectMood={setMood}
@@ -153,6 +158,7 @@ export default function MoodScreen() {
         {phase === "content" && moodLabel ? (
           <HomeContentPhase
             moodLabel={moodLabel}
+            moodEmoji={moodEmoji}
             context={context}
             mainType={mainType}
             recipe={resolvedRecipe}

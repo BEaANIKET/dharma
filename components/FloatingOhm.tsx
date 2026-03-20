@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import { Text, View, Animated, Easing } from "react-native";
-import { colors } from "@/theme/tokens";
 
 type FloatingOmProps = {
   size?: number;
@@ -13,7 +12,7 @@ type FloatingOmProps = {
 
 export default function FloatingOm({
   size = 180,
-  color = colors.onboardingGoldOm,
+  color = "#D4960A",
   opacity = 0.035,
   top = 160,
   left = 40,

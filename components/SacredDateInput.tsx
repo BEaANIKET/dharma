@@ -80,12 +80,9 @@ export default function SacredDateInput({
       {/* Label */}
       {label && (
         <Text
-          className="mb-2 text-xs uppercase tracking-widest font-ui"
-          style={{
-            color: focused
-              ? activeLabelColor ?? underlineColor
-              : labelColor,
-          }}
+          className={`mb-2 text-xs uppercase tracking-widest font-ui ${
+            focused ? "text-accent-primary dark:text-accent-primary-dark" : "text-text-secondary/70 dark:text-text-secondary-dark/50"
+          }`}
         >
           {label}
         </Text>
@@ -96,33 +93,24 @@ export default function SacredDateInput({
         onPress={onFocus}
         className="flex-row items-center justify-between py-2"
       >
-        <Text
-          className="text-lg font-ui"
-          style={{
-            color: textColor,
-          }}
-        >
+        <Text className="text-lg font-ui text-text-primary dark:text-text-primary-dark">
           {formattedDate}
         </Text>
 
         <Ionicons
           name="calendar-outline"
           size={18}
-          color={labelColor}
+          color="#6b6878"
         />
       </Pressable>
 
       {/* Base underline */}
-      <View
-        className="h-px w-full mt-2"
-        style={{ backgroundColor: underlineBaseColor }}
-      />
+      <View className="h-px w-full mt-2 bg-border dark:bg-border-dark" />
 
       {/* Animated underline */}
       <Animated.View
-        className="absolute bottom-0 h-[1.5px] w-full"
+        className="absolute bottom-0 h-[1.5px] w-full bg-accent-primary dark:bg-accent-primary-dark"
         style={{
-          backgroundColor: underlineColor,
           opacity: underlineOp,
           transform: [{ scaleX: underlineScale }],
         }}

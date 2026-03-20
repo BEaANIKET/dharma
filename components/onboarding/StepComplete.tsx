@@ -3,7 +3,6 @@ import { useOnboardingStore } from "@/store/useOnboardingStore";
 import { useEffect } from "react";
 import { Text, View } from "react-native";
 import { router } from "expo-router";
-import { onboardingPalette as C } from "@/theme/onboarding";
 
 export default function StepComplete() {
   const name = useOnboardingStore((s) => s.name);
@@ -47,10 +46,7 @@ export default function StepComplete() {
 
   return (
     <View className="flex-1 items-center justify-center">
-      <Text
-        className="text-3xl italic font-heading"
-        style={{ color: C.goldLabel }}
-      >
+      <Text className="text-4xl font-headingMediumItalic text-text-primary dark:text-text-primary-dark">
         welcome.
       </Text>
     </View>

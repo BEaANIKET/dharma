@@ -10,6 +10,7 @@ import StepName from "@/components/onboarding/StepName";
 import StepAge from "@/components/onboarding/StepAge";
 import StepGender from "@/components/onboarding/StepGender";
 import StepComplete from "@/components/onboarding/StepComplete";
+import GradientBackground from "@/components/GradientBackground";
 
 export default function OnboardingDetails() {
   const [step, setStep] = useState(0);
@@ -18,19 +19,21 @@ export default function OnboardingDetails() {
   const back = () => setStep((s) => s - 1);
 
   return (
-    <SafeAreaView className="flex-1 bg-onboardingBg">
-      <KeyboardAvoidingView
-        className="flex-1"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
-      >
-        <View className="flex-1">
-          {step === 0 && <StepName onNext={next} />}
-          {step === 1 && <StepAge onNext={next} onBack={back} />}
-          {/* {step === 2 && <StepGender onNext={next} onBack={back} />} */}
-          {step === 2 && <StepComplete />}
-        </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    <GradientBackground>
+      <SafeAreaView className="flex-1">
+        <KeyboardAvoidingView
+          className="flex-1"
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+        >
+          <View className="flex-1">
+            {step === 0 && <StepName onNext={next} />}
+            {step === 1 && <StepAge onNext={next} onBack={back} />}
+            {/* {step === 2 && <StepGender onNext={next} onBack={back} />} */}
+            {step === 2 && <StepComplete />}
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </GradientBackground>
   );
 }

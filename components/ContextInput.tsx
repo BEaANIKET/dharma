@@ -1,21 +1,20 @@
 import { View, TextInput, Text } from "react-native";
 import { useState } from "react";
-import { colors } from "@/theme/colors";
 
 export default function ContextInput() {
   const [text, setText] = useState("");
 
   return (
     <View className="mt-6 w-full">
-      <Text className=" text-textSecondary pb-2 "> ADD MORE CONTEXT (OPTIONAL)</Text>
+      <Text className="text-secondary dark:text-secondary-dark pb-2"> ADD MORE CONTEXT (OPTIONAL)</Text>
       <TextInput
         value={text}
         onChangeText={setText}
         placeholder="What happened today? I'm listening..."
-        placeholderTextColor={colors.textMuted}
+        placeholderTextColor="#6b6878"
         multiline
         textAlignVertical="top"
-        className="bg-card rounded-2xl p-4 h-32 text-textPrimary border border-white/5"
+        className="bg-surface dark:bg-surface-dark rounded-2xl p-4 h-32 text-primary dark:text-parchment border border-border/40 dark:border-border-dark/40"
       />
     </View>
   );

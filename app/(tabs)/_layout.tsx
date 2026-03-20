@@ -1,8 +1,7 @@
 import { Tabs } from "expo-router";
 import { View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import FloatingOm from "@/components/FloatingOhm";
-import { colors } from "@/theme/colors";
+import DharmaLogo from "@/components/DharmaLogo";
 
 export default function TabsLayout() {
   return (
@@ -10,44 +9,64 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: true,
         headerTitleAlign: "left",
-        headerStyle: {
-          backgroundColor: colors.background,
-        },
-        headerTitle: () => (
-          <View className=" px-4 ">
-            <FloatingOm size={20} opacity={1} />
-          </View>
+
+        /**
+         * Header background uses theme tokens
+         * so it responds to light/dark mode automatically
+         */
+        headerBackground: () => (
+          <View className="flex-1 bg-bg dark:bg-bg-dark " />
         ),
+
+        /**
+         * Custom header title component
+         */
+        headerTitle: () => (
+          <DharmaLogo size={36} showWordmark={false} />
+        ),
+
+        /**
+         * React Navigation requires inline styles
+         * so these cannot be converted to NativeWind
+         */
         tabBarStyle: {
-          backgroundColor: colors.backgroundDeep,
+          backgroundColor: "transparent", // let tabBarBackground control the color
           borderTopWidth: 0,
           height: 78,
           paddingTop: 8,
           paddingBottom: 10,
-          // paddingHorizontal: 0,
         },
+
+        /**
+         * Tab bar background using theme color
+         */
+        tabBarBackground: () => (
+          <View className="flex-1 bg-bg dark:bg-bg-dark" />
+        ),
+
         tabBarLabelStyle: {
           fontSize: 13,
           marginTop: 2,
         },
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textSecondary,
+
+        /**
+         * Use theme tokens instead of hardcoded basic hex where possible
+         * Note: NativeWind config dictates #4ECDC4 for accent-primary-dark, and we match it here.
+         */
+        tabBarActiveTintColor: "#4ECDC4", // accent-primary-dark
+        tabBarInactiveTintColor: "#6b6878", // text-secondary
       }}
     >
+      {/* ---------------- HOME ---------------- */}
       <Tabs.Screen
         name="home"
         options={{
           title: "Home",
           tabBarIcon: ({ focused, color, size }) => (
             <View
-              style={{
-                width: 38,
-                height: 38,
-                borderRadius: 12,
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: focused ? colors.primarySurface : "transparent",
-              }}
+              className={`w-[38px] h-[38px] rounded-[12px] items-center justify-center ${
+                focused ? "bg-accent-primary-dark/15 dark:bg-accent-primary-dark/15" : "bg-transparent"
+              }`}
             >
               <Ionicons
                 name={focused ? "home" : "home-outline"}
@@ -58,20 +77,17 @@ export default function TabsLayout() {
           ),
         }}
       />
+
+      {/* ---------------- EXPLORE ---------------- */}
       <Tabs.Screen
         name="explore"
         options={{
           title: "Explore",
           tabBarIcon: ({ focused, color, size }) => (
             <View
-              style={{
-                width: 38,
-                height: 38,
-                borderRadius: 12,
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: focused ? colors.primarySurface : "transparent",
-              }}
+              className={`w-[38px] h-[38px] rounded-[12px] items-center justify-center ${
+                focused ? "bg-accent-primary-dark/15 dark:bg-accent-primary-dark/15" : "bg-transparent"
+              }`}
             >
               <Ionicons
                 name={focused ? "compass" : "compass-outline"}
@@ -82,26 +98,25 @@ export default function TabsLayout() {
           ),
         }}
       />
+
+      {/* Hidden center route (used for navigation only) */}
       <Tabs.Screen
         name="cosmic"
         options={{
           href: null,
         }}
       />
+
+      {/* ---------------- PROFILE ---------------- */}
       <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",
           tabBarIcon: ({ focused, color, size }) => (
             <View
-              style={{
-                width: 38,
-                height: 38,
-                borderRadius: 12,
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: focused ? colors.primarySurface : "transparent",
-              }}
+              className={`w-[38px] h-[38px] rounded-[12px] items-center justify-center ${
+                focused ? "bg-accent-primary-dark/15 dark:bg-accent-primary-dark/15" : "bg-transparent"
+              }`}
             >
               <Ionicons
                 name={focused ? "person" : "person-outline"}

@@ -1,5 +1,5 @@
-import { ActivityIndicator, Image, Text, View } from "react-native";
-import { colors } from "@/theme/tokens";
+import { ActivityIndicator, Text, View } from "react-native";
+import DharmaLogo from "@/components/DharmaLogo";
 
 type StartupLoaderProps = {
   message?: string;
@@ -14,23 +14,18 @@ export default function StartupLoader({
 }: StartupLoaderProps) {
   return (
     <View
-      className={fullscreen ? "flex-1 items-center justify-center px-8" : "items-center justify-center px-8"}
-      style={{ backgroundColor: colors.background }}
+      className={`${fullscreen ? "flex-1" : ""} items-center justify-center px-8 bg-bg dark:bg-bg-dark`}
     >
-      <Image
-        source={require("../assets/images/mydharmalogo.png")}
-        resizeMode="contain"
-        className="h-[180px] w-[180px]"
-      />
-      <Text className="mt-6 text-lg font-semibold text-center font-ui" style={{ color: colors.textPrimary }}>
+      <DharmaLogo size={120} showWordmark />
+      <Text className="mt-6 text-lg font-semibold text-center font-ui text-primary dark:text-text-primary-dark">
         {message}
       </Text>
       {!!subMessage && (
-        <Text className="mt-2 text-sm text-center font-ui" style={{ color: colors.textSecondary }}>
+        <Text className="mt-2 text-sm text-center font-ui text-secondary dark:text-secondary-dark">
           {subMessage}
         </Text>
       )}
-      <ActivityIndicator color={colors.primary} size="small" style={{ marginTop: 18 }} />
+      <ActivityIndicator color="#4ECDC4" size="small" style={{ marginTop: 18 }} />
     </View>
   );
 }

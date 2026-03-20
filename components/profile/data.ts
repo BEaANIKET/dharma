@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "@/theme/colors";
 
 export type Preference = {
   label: string;
@@ -7,18 +6,13 @@ export type Preference = {
   icon: keyof typeof Ionicons.glyphMap;
 };
 
-export type SettingItem = {
-  label: string;
-  sub: string;
-  icon: keyof typeof Ionicons.glyphMap;
-};
 
 export const WEEK_LABELS = ["M", "T", "W", "T", "F", "S", "S"] as const;
 
 export const STATS = [
-  { label: "Verses Heard", key: "verses", icon: "book-outline", color: colors.primary },
-  { label: "Minutes Breathed", key: "minutes", icon: "leaf-outline", color: colors.accentSage },
-  { label: "Deeds Done", key: "deeds", icon: "heart-outline", color: colors.accentRose },
+  { label: "Verses Heard", key: "verses", icon: "book-outline", color: "#FFD25A" },
+  { label: "Minutes Breathed", key: "minutes", icon: "leaf-outline", color: "#4ECDC4" },
+  { label: "Deeds Done", key: "deeds", icon: "heart-outline", color: "#C94058" },
 ] as const;
 
 export const PREFERENCES: Preference[] = [
@@ -29,8 +23,3 @@ export const PREFERENCES: Preference[] = [
   { label: "Hindu Mythology Stories", pref: null, icon: "sparkles-outline" },
 ];
 
-export const SETTINGS: SettingItem[] = [
-  { label: "Notifications", sub: "Daily verse at 7:00 AM", icon: "notifications-outline" },
-  { label: "Dark Mode", sub: "Always on", icon: "moon-outline" },
-  { label: "Language", sub: "English + Sanskrit", icon: "language-outline" },
-];

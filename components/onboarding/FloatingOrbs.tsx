@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import { Animated, type ViewStyle } from "react-native";
-import { colors } from "@/theme/colors";
 
 type Percent = `${number}%`;
 
@@ -44,8 +43,6 @@ function Orb({ size, top, left, delay, duration, opacity }: OrbProps) {
     width: size,
     height: size,
     borderRadius: size / 2,
-    backgroundColor: colors.primaryTint12,
-    shadowColor: colors.primary,
     shadowOpacity: 0.2,
     shadowRadius: 18,
     shadowOffset: { width: 0, height: 0 },
@@ -53,6 +50,7 @@ function Orb({ size, top, left, delay, duration, opacity }: OrbProps) {
 
   return (
     <Animated.View
+      className="bg-dharma-teal/12 shadow-lg"
       style={[
         orbStyle,
         {

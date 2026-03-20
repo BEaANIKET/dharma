@@ -1,5 +1,4 @@
 import { Pressable, Text } from "react-native";
-import { colors } from "@/theme/colors";
 
 interface PrimaryButtonProps {
   disabled?: boolean;
@@ -12,22 +11,22 @@ interface PrimaryButtonProps {
 export default function PrimaryButton({
   disabled = false,
   onPress,
-  accentColor = colors.primary,
-  softColor = colors.primarySurface,
-  borderColor = colors.primary,
+  accentColor,
+  softColor,
+  borderColor,
 }: PrimaryButtonProps) {
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
-      className="mt-8 mb-8 w-full rounded-2xl  py-4 items-center justify-center border"
+      className={`mt-8 mb-8 w-full rounded-2xl py-4 items-center justify-center border ${
+        disabled ? "border-disabled dark:border-disabled-dark bg-disabled dark:bg-disabled-dark" : "border-accent-primary dark:border-accent-primary-dark bg-accent-primary dark:bg-accent-primary-dark"
+      }`}
       style={{
-        backgroundColor: disabled ? colors.disabledCard : softColor,
-        borderColor: disabled ? colors.disabledBorder : borderColor,
         transform: [{ scale: true && !disabled ? 0.98 : 1 }],
       }}
     >
-      <Text className="text-lg font-uiItalic" style={{ color: disabled ? colors.textDisabled : accentColor }}>
+      <Text className={`text-lg font-uiItalic ${disabled ? "text-text-secondary/70 dark:text-text-secondary-dark/50" : "text-bg-dark"}`}>
         Curate my spiritual experience →
       </Text>
     </Pressable>

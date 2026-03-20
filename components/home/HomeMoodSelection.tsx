@@ -1,16 +1,14 @@
-import { Pressable, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Pressable, Text, TextInput, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import MoodCard from "@/components/MoodCard";
-import NotSureButton from "@/components/NotSureButton";
-import { colors } from "@/theme/colors";
 import { textStyles } from "@/theme/typography";
-import { MOOD_OPTIONS, MoodLabel } from "./data";
+import { useMetadataStore } from "@/store/useMetadataStore";
 
 interface HomeMoodSelectionProps {
-  selectedMood: MoodLabel | null;
+  selectedMood: string | null;
   context: string;
   onChangeContext: (value: string) => void;
-  onSelectMood: (mood: MoodLabel) => void;
+  onSelectMood: (value: string) => void;
   onSubmit: () => void;
 }
 
@@ -21,67 +19,76 @@ export default function HomeMoodSelection({
   onSelectMood,
   onSubmit,
 }: HomeMoodSelectionProps) {
-  const selectedTheme = selectedMood ? MOOD_OPTIONS.find((mood) => mood.label === selectedMood) : null;
+  const moods = useMetadataStore((s) => s.moods);
+  const isLoadingMoods = useMetadataStore((s) => s.isLoading);
 
   return (
     <View>
-      <Text className="text-5xl leading-tight font-headingSemiBold" style={{ color: colors.onboardingWhite90 }}>
+      <Text className="text-5xl leading-tight font-headingSemiBold text-text-primary dark:text-text-primary-dark">
         What&apos;s weighing{"\n"}on you?
       </Text>
-      <Text className={`${textStyles.body} mt-2 text-textSecondary`}>
+      <Text className={`${textStyles.body} mt-2 text-text-secondary dark:text-text-secondary-dark`}>
         Tap one. We&apos;ll handle the rest.
       </Text>
 
-      <View className="mt-8 flex-row flex-wrap justify-between">
-        {MOOD_OPTIONS.map((mood) => (
-          <MoodCard
-            key={mood.label}
-            emoji={mood.emoji}
-            label={mood.label}
-            isSelected={selectedMood === mood.label}
-            accentColor={colors.primary}
-            borderColor={colors.primarySoft}
-            onPress={() => onSelectMood(mood.label)}
-          />
-        ))}
-      </View>
+      {isLoadingMoods ? (
+        <ActivityIndicator className="my-10 w-full" color="#4ECDC4" />
+      ) : (
+        <>
+          <View className="mt-8 flex-row flex-wrap justify-between">
+            {moods.slice(0, -1).map((mood) => (
+              <MoodCard
+                key={mood.id}
+                emoji={mood.emoji}
+                label={mood.label}
+                description={mood.description}
+                isSelected={selectedMood === mood.value}
+                onPress={() => onSelectMood(mood.value)}
+              />
+            ))}
+          </View>
 
-      <NotSureButton />
+          {moods.length > 0 && (() => {
+            const last = moods[moods.length - 1];
+            return (
+              <MoodCard
+                key={last.id}
+                emoji={last.emoji}
+                label={last.label}
+                description={last.description}
+                isSelected={selectedMood === last.value}
+                fullWidth
+                onPress={() => onSelectMood(last.value)}
+              />
+            );
+          })()}
+        </>
+      )}
 
       <View
-        className="mt-5 flex-row items-center rounded-2xl border px-4"
-        style={{
-          backgroundColor: colors.backgroundSoft,
-          borderColor: colors.cardBorder,
-        }}
+        className="mt-5 flex-row items-center rounded-2xl border border-border dark:border-border-dark bg-surface dark:bg-surface-dark px-4"
       >
         <TextInput
           value={context}
           onChangeText={onChangeContext}
           placeholder="What happened today? I'm listening... "
-          placeholderTextColor={colors.textSecondary}
-          className="h-14 flex-1 text-xl font-ui"
-          style={{ color: colors.textPrimary }}
+          placeholderTextColor="#6b6878"
+          className="h-14 flex-1 text-xl font-ui text-primary dark:text-parchment"
         />
         <Pressable
           onPress={onSubmit}
-          className="h-11 w-11 items-center justify-center rounded-2xl"
-          style={{
-            backgroundColor: selectedMood ? colors.primary : colors.backgroundElevated,
-            opacity: selectedMood ? 1 : 0.5,
-          }}
+          className={`h-11 w-11 items-center justify-center rounded-2xl ${selectedMood ? "bg-accent-primary dark:bg-accent-primary-dark" : "bg-surface dark:bg-surface-dark opacity-50"}`}
         >
-          <Ionicons name="paper-plane-outline" size={20} color={colors.backgroundDeep} />
+          <Ionicons name="paper-plane-outline" size={20} color="#09090F" />
         </Pressable>
       </View>
 
       {selectedMood ? (
         <Pressable
           onPress={onSubmit}
-          className="mt-7 self-center rounded-2xl px-9 py-4"
-          style={{ backgroundColor: selectedTheme?.accent ?? colors.primary }}
+          className="mt-7 self-center rounded-2xl bg-highlight px-9 py-4"
         >
-          <Text className="text-2xl font-uiSemiBold" style={{ color: selectedTheme?.text ?? colors.backgroundDeep }}>
+          <Text className="text-2xl font-uiSemiBold text-bg-dark">
             Find my ground {"\u2192"}
           </Text>
         </Pressable>

@@ -1,8 +1,22 @@
 import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import "../global.css";
+import { useEffect } from "react";
+import { View } from "react-native";
+import { useColorScheme } from "nativewind";
+import { useThemeStore } from "@/store/useThemeStore";
 
 export default function RootLayout() {
+  const isDark = useThemeStore((state) => state.isDark);
+  const { setColorScheme } = useColorScheme();
+
+  // Sync Zustand state → NativeWind color scheme context.
+  // This is required because changing className on the root View alone
+  // does not re-evaluate dark: styles on already-mounted components.
+  useEffect(() => {
+    setColorScheme(isDark ? "dark" : "light");
+  }, [isDark]);
+
   const [fontsLoaded] = useFonts({
     "CormorantGaramond-Light": require("../assets/fonts/Cormorant_Garamond/static/CormorantGaramond-Light.ttf"),
     "CormorantGaramond-LightItalic": require("../assets/fonts/Cormorant_Garamond/static/CormorantGaramond-LightItalic.ttf"),
@@ -35,16 +49,29 @@ export default function RootLayout() {
     "Inter-BlackItalic": require("../assets/fonts/Inter/static/Inter_18pt-BlackItalic.ttf"),
   });
 
-  if (!fontsLoaded) {
-    return null;
-  }
+
+  // useEffect(() => {
+  //   // Detect system theme on startup
+  //   const colorScheme = Appearance.getColorScheme();
+  //   setDarkMode(colorScheme === "dark");
+
+  //   // Optional: listen for system changes
+  //   const listener = Appearance.addChangeListener(({ colorScheme }) => {
+  //     setDarkMode(colorScheme === "dark");
+  //   });
+  //   return () => listener.remove();
+  // }, []);
+
+  if (!fontsLoaded) return null;
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />
-      <Stack.Screen name="loading" />
-      <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="onboarding" options={{ animation: "fade" }} />
-    </Stack>
+    <View className="flex-1">
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="loading" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="onboarding" options={{ animation: "fade" }} />
+      </Stack>
+    </View>
   );
 }

@@ -4,7 +4,7 @@
     "slug": "mydharma",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/mydharmalogo.png",
+    "icon": "./assets/images/dark-app-icon-1024x1024.svg",
     "scheme": "mydharma",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,8 +14,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#09080E",
-        "foregroundImage": "./assets/images/mydharmalogo.png"
+        "backgroundColor": "#111128",
+        "foregroundImage": "./assets/images/dark-app-icon-1024x1024.svg"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -23,19 +23,20 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/mydharmalogo.png"
+      "favicon": "./assets/images/dark-app-icon-1024x1024.svg"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/mydharmalogo.png",
-          "imageWidth": 180,
-          "resizeMode": "contain",
-          "backgroundColor": "#09080E",
+          "image": "./assets/images/dark-splash-android.svg",
+          "resizeMode": "cover",
+          "backgroundColor": "#111128",
           "dark": {
-            "backgroundColor": "#09080E"
+            "image": "./assets/images/dark-splash-android.svg",
+            "resizeMode": "cover",
+            "backgroundColor": "#111128"
           }
         }
       ],

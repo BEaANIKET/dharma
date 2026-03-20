@@ -5,7 +5,7 @@ export default function Cosmic() {
   return (
     <GradientBackground>
       <View className="flex-1 justify-center items-center">
-        <Text className="text-textPrimary text-xl">
+        <Text className="text-text-primary dark:text-text-primary-dark text-xl">
           Cosmic Screen
         </Text>
       </View>

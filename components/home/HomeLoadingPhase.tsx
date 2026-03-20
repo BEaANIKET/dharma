@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Animated, Text, View } from "react-native";
-import { colors } from "@/theme/colors";
 import { LOADING_STEPS } from "./data";
 
 interface HomeLoadingPhaseProps {
@@ -44,7 +43,7 @@ export default function HomeLoadingPhase({ moodEmoji }: HomeLoadingPhaseProps) {
     <View className="mt-24 items-center px-5">
       <Animated.Text style={{ transform: [{ translateY: floatY }], fontSize: 84 }}>{moodEmoji}</Animated.Text>
 
-      <Text className="mt-10 text-center text-xl italic leading-9 font-ui" style={{ color: colors.textPrimary }}>
+      <Text className="mt-10 text-center text-xl italic leading-9 font-ui text-text-primary dark:text-text-primary-dark">
         {LOADING_STEPS[stepIndex]}
       </Text>
 
@@ -52,9 +51,8 @@ export default function HomeLoadingPhase({ moodEmoji }: HomeLoadingPhaseProps) {
         {dots.map((dot) => (
           <Animated.View
             key={dot}
-            className="mx-2 h-4 w-4 rounded-full"
+            className={`mx-2 h-4 w-4 rounded-full ${dot === stepIndex ? "bg-accent-primary dark:bg-accent-primary-dark" : "bg-border dark:bg-border-dark"}`}
             style={{
-              backgroundColor: dot === stepIndex ? colors.primary : colors.cardBorder,
               opacity: dot === stepIndex ? pulse : 0.75,
             }}
           />

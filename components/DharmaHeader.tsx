@@ -4,7 +4,6 @@ import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useAuthStore } from "@/store/useAuthStore";
 import { LinearGradient } from "expo-linear-gradient";
-import { colors } from "@/theme/colors";
 
 export default function DharmaHeader() {
   const [open, setOpen] = useState(false);
@@ -34,20 +33,20 @@ export default function DharmaHeader() {
 
         {/* LEFT */}
         <View className="flex-row items-center gap-3">
-          <Pressable className="flex-row items-center bg-white/5 border border-white/10 px-4 py-2 rounded-xl">
-            <Text className="text-primary text-sm font-medium">EN</Text>
-            <Text className="text-white/40 mx-2">|</Text>
-            <Text className="text-white/60 text-sm">हि</Text>
+          <Pressable className="flex-row items-center bg-surface/40 dark:bg-surface-dark border border-border/40 dark:border-border-dark/40 px-4 py-2 rounded-xl">
+            <Text className="text-highlight dark:text-highlight-dark text-sm font-medium">EN</Text>
+            <Text className="text-text-secondary/60 dark:text-text-secondary-dark/40 mx-2">|</Text>
+            <Text className="text-text-secondary/70 dark:text-text-secondary-dark/60 text-sm">हि</Text>
           </Pressable>
 
-          <Pressable className="bg-white/5 border border-white/10 p-3 rounded-xl">
-            <Feather name="settings" size={18} color={colors.textSecondary} />
+          <Pressable className="bg-surface/40 dark:bg-surface-dark/40 border border-border/40 dark:border-border-dark/40 p-3 rounded-xl">
+            <Feather name="settings" size={18} color="#6b6878" />
           </Pressable>
         </View>
 
         {/* CENTER */}
         <View className="absolute top-[30%] left-0 right-0 items-center">
-          <Text className="text-primary text-xl tracking-widest">
+          <Text className="text-highlight dark:text-highlight-dark text-xl tracking-widest">
             🕉 Dharma AI
           </Text>
         </View>
@@ -55,12 +54,12 @@ export default function DharmaHeader() {
         {/* PROFILE BUTTON */}
         <Pressable
           onPress={handleProfilePress}
-          className="bg-white/5 border border-white/10 rounded-xl h-11 w-11 items-center justify-center"
+          className="bg-surface/40 dark:bg-surface-dark/40 border border-border/40 dark:border-border-dark/40 rounded-xl h-11 w-11 items-center justify-center"
         >
           {initials ? (
-            <Text className="text-primary font-semibold text-base">{initials}</Text>
+            <Text className="text-highlight dark:text-highlight-dark font-semibold text-base">{initials}</Text>
           ) : (
-            <Feather name="user" size={18} color={colors.textSecondary} />
+            <Feather name="user" size={18} color="#6b6878" />
           )}
         </Pressable>
       </View>
@@ -72,7 +71,7 @@ export default function DharmaHeader() {
         onRequestClose={() => setOpen(false)}
       >
         <Pressable
-          className="flex-1 bg-black/65 justify-end"
+          className="flex-1 bg-bg-dark/65 justify-end"
           onPress={() => setOpen(false)}
         >
           <Pressable
@@ -80,35 +79,35 @@ export default function DharmaHeader() {
             className="rounded-t-3xl overflow-hidden"
           >
             <LinearGradient
-              colors={[colors.background, colors.backgroundSoft, colors.backgroundDeep]}
+              colors={["#111128", "#1a1a38", "#09090F"]}
               className="p-6 rounded-t-3xl"
             >
-              <View className="w-12 h-1 bg-white/20 rounded-full self-center mb-6" />
+              <View className="w-12 h-1 bg-text-primary-dark/20 rounded-full self-center mb-6" />
 
-              <View className="bg-white/5 border border-white/10 rounded-2xl p-5">
-                <Text className="text-primary tracking-widest text-xs mb-4">
+              <View className="bg-surface/40 dark:bg-surface-dark/40 border border-border/40 dark:border-border-dark/40 rounded-2xl p-5">
+                <Text className="text-highlight dark:text-highlight-dark tracking-widest text-xs mb-4">
                   🕉 DHARMA PROFILE
                 </Text>
 
                 <View className="flex-row items-center">
-                  <View className="h-16 w-16 rounded-2xl items-center justify-center bg-cyan-400/20 border border-cyan-300/30 mr-4">
-                    <Text className="text-primary text-2xl font-semibold">
+                  <View className="h-16 w-16 rounded-2xl items-center justify-center bg-accent-primary/20 dark:bg-accent-primary-dark/20 border border-accent-primary/30 dark:border-accent-primary-dark/30 mr-4">
+                    <Text className="text-highlight dark:text-highlight-dark text-2xl font-semibold">
                       {initials ?? "D"}
                     </Text>
                   </View>
 
                   <View className="flex-1">
-                    <Text className="text-textPrimary text-xl">
+                    <Text className="text-text-primary-dark text-xl">
                       {user?.name ?? "Dharma Seeker"}
                     </Text>
-                    <Text className="text-textSecondary mt-1">
+                    <Text className="text-text-secondary-dark mt-1">
                       {user?.mobile ?? user?.email ?? "seeker@dharma.ai"}
                     </Text>
                   </View>
                 </View>
 
-                <View className="h-[1px] bg-white/10 my-6" />
-                <Text className="text-textSecondary">
+                <View className="h-[1px] bg-text-primary-dark/10 my-6" />
+                <Text className="text-secondary-dark">
                   Keep showing up. Your inner balance grows one mindful day at a time.
                 </Text>
               </View>
@@ -116,9 +115,9 @@ export default function DharmaHeader() {
               <Pressable
                 onPress={handleSignOut}
                 disabled={isLoading}
-                className="mt-6 bg-white/5 border border-white/10 rounded-2xl p-4 items-center"
+                className="mt-6 bg-surface/40 dark:bg-surface-dark/40 border border-border/40 dark:border-border-dark/40 rounded-2xl p-4 items-center"
               >
-                <Text className="text-white/70">{isLoading ? "Signing out..." : "Sign out"}</Text>
+                <Text className="text-secondary-dark">{isLoading ? "Signing out..." : "Sign out"}</Text>
               </Pressable>
             </LinearGradient>
           </Pressable>

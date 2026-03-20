@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import { View } from "react-native";
-import { colors } from "@/theme/colors";
 
 type Star = {
   top: `${number}%`;
@@ -33,6 +32,7 @@ export default function Starfield() {
       {stars.map((star, index) => (
         <View
           key={`star-${index}`}
+          className="bg-text-primary dark:bg-text-primary-dark"
           style={{
             position: "absolute",
             top: star.top,
@@ -40,7 +40,6 @@ export default function Starfield() {
             width: star.size,
             height: star.size,
             borderRadius: star.size,
-            backgroundColor: colors.star,
             opacity: star.opacity,
           }}
         />

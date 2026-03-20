@@ -1,5 +1,4 @@
 import { Text, TextInput, View } from "react-native";
-import { colors } from "@/theme/colors";
 
 type PhoneInputProps = {
   value: string;
@@ -8,14 +7,14 @@ type PhoneInputProps = {
 
 export default function PhoneInput({ value, onChange }: PhoneInputProps) {
   return (
-    <View className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 flex-row items-center">
-      <View className="px-3 py-2 rounded-full bg-cyan-400/10 border border-cyan-300/30">
-        <Text className="text-cyan-100 text-sm font-semibold">+1</Text>
+    <View className="bg-surface/40 dark:bg-surface-dark/40 border border-border/40 dark:border-border-dark/40 rounded-2xl px-4 py-3 flex-row items-center">
+      <View className="px-3 py-2 rounded-full bg-dharma-teal/10 border border-dharma-teal/30">
+        <Text className="text-dharma-teal text-sm font-semibold">+1</Text>
       </View>
       <TextInput
-        className="flex-1 ml-3 text-textPrimary text-base"
+        className="flex-1 ml-3 text-text-primary dark:text-text-primary-dark text-base"
         placeholder="(555) 000-0000"
-        placeholderTextColor={colors.textMuted}
+        placeholderTextColor="#6b6878"
         keyboardType="phone-pad"
         value={value}
         onChangeText={onChange}

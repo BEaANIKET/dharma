@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Animated, Text, View } from "react-native";
+import DharmaLogo from "@/components/DharmaLogo";
 import { router } from "expo-router";
 import GradientBackground from "@/components/GradientBackground";
 import { useMoodStore } from "@/store/useMoodStore";
 import { moodMap } from "@/constants/moodThemes";
-import { colors } from "@/theme/tokens";
 
 const LOADING_STEPS = [
   "Consulting all 700 Gita verses...",
@@ -89,7 +89,7 @@ export default function Loading() {
           {moodEmoji}
         </Animated.Text>
 
-        <Text className="text-textPrimary text-xl italic text-center mt-10 leading-10 font-ui">
+        <Text className="text-text-primary dark:text-text-primary-dark text-xl italic text-center mt-10 leading-10 font-ui">
           {LOADING_STEPS[stepIndex]}
         </Text>
 
@@ -97,19 +97,17 @@ export default function Loading() {
           {dots.map((dot) => (
             <Animated.View
               key={dot}
-              className="h-4 w-4 rounded-full mx-2"
+              className={`h-4 w-4 rounded-full mx-2 ${dot === stepIndex ? "bg-accent-primary dark:bg-accent-primary-dark" : "bg-border dark:bg-border-dark"}`}
               style={{
-                backgroundColor:
-                  dot === stepIndex ? selectedTheme?.accent ?? colors.primary : colors.cardBorder,
                 opacity: dot === stepIndex ? pulse : 0.7,
               }}
             />
           ))}
         </View>
 
-        <Text className="text-textMuted mt-16 font-ui tracking-widest">
-          DHARMA AI
-        </Text>
+        <View style={{ marginTop: 48 }}>
+          <DharmaLogo size={80} showWordmark />
+        </View>
       </View>
     </GradientBackground>
   );

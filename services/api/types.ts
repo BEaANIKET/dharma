@@ -34,6 +34,27 @@ export type UserUpdateInput = {
   city?: string | null;
 };
 
+export type ApiMood = {
+  value: string;
+  label: string;
+  emoji: string;
+  description: string;
+  ai_hint: string;
+};
+
+export type ApiActivityType = {
+  value: string;
+  label: string;
+};
+
+export type MetadataConfig = {
+  activity_types: ApiActivityType[];
+  moods: ApiMood[];
+  supported_cities: string[];
+  panchang_data_start: string;
+  app_version: string;
+};
+
 export type RecipeQuery = {
   mood: string;
   feelings?: string;

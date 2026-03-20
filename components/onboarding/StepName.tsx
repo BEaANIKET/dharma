@@ -2,15 +2,15 @@ import {
   Text,
   View,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
 import SacredInput from "../ScaredInput";
-import PrimaryGlowButton from "./PrimaryGlowButton";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
-import FloatingOm from "../FloatingOhm";
-import { colors } from "@/theme/colors";
 import TextButton from "../TextButton";
+import FloatingOm from "../FloatingOhm";
 
 type StepNameProps = {
   onNext: () => void;
@@ -21,9 +21,13 @@ export default function StepName({ onNext }: StepNameProps) {
   const typingSoundRef = useRef<Audio.Sound | null>(null);
   const headingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [typedHeading, setTypedHeading] = useState("");
+
+  const scrollRef = useRef<ScrollView>(null);
+  const emailY = useRef(0);
+  const nameY = useRef(0);
+
   const name = useOnboardingStore((s) => s.name);
   const setName = useOnboardingStore((s) => s.setName);
-
   const email = useOnboardingStore((s) => s.email);
   const setEmail = useOnboardingStore((s) => s.setEmail);
 
@@ -43,7 +47,6 @@ export default function StepName({ onNext }: StepNameProps) {
         typingSoundRef.current = sound;
       })
       .catch(() => { });
-
     return () => {
       snd?.unloadAsync().catch(() => { });
       typingSoundRef.current = null;
@@ -62,7 +65,6 @@ export default function StepName({ onNext }: StepNameProps) {
       idx++;
       setTypedHeading(headingText.slice(0, idx));
       playTypeSound();
-
       if (idx >= headingText.length && headingTimerRef.current) {
         clearInterval(headingTimerRef.current);
         headingTimerRef.current = null;
@@ -77,70 +79,81 @@ export default function StepName({ onNext }: StepNameProps) {
     };
   }, [headingText, playTypeSound]);
 
-  const onNameChange = useCallback((value: string) => {
-    setName(value);
-  }, [playTypeSound, setName]);
+  const onNameChange = useCallback((value: string) => setName(value), [setName]);
+  const onEmailChange = useCallback((value: string) => setEmail(value), [setEmail]);
 
-  const onEmailChange = useCallback((value: string) => {
-    setEmail(value);
-  }, [playTypeSound, setEmail]);
+  const scrollToY = (y: number) => {
+    scrollRef.current?.scrollTo({ y: Math.max(0, y - 24), animated: true });
+  };
 
   return (
-    <View className="flex-1 px-6 justify-center">
-
-      <View className=" ml-3 mt-16 ">
+    <KeyboardAvoidingView
+      className="flex-1"
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 24 : 0}
+    >
+      {/* ── Watermark ॐ ── */}
+      <View className="ml-3 mt-16">
         <FloatingOm size={24} opacity={0.7} top={80} left={35} />
       </View>
 
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag"
-        automaticallyAdjustKeyboardInsets
-        showsVerticalScrollIndicator={false}
-      >
-        <View className="flex-1 justify-center z-10 pt-0 pb-24">
-          {/* Quote */}
-          <View className="mb-8 pl-4 border-l border-onboardingGoldFaint">
-            <Text
-              className="text-sm italic leading-relaxed mb-3 text-onboardingWhite30 font-devanagari"
-            >
-              “नामरूप — name and form —{"\n"}
-              is the root of all existence.”
-            </Text>
 
-            <Text
-              className="text-xs uppercase tracking-widest text-onboardingVerseLabel font-ui"
-            >
+      <ScrollView
+        ref={scrollRef}
+        contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24 }}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
+        showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
+      >
+        <View className="flex-1 justify-center pb-16 pt-12">
+
+          {/* Step label */}
+          <Text className="mb-8 text-xs uppercase tracking-[0.2em] font-ui text-accent-secondary dark:text-accent-secondary-dark opacity-70">
+            step 1 of 2  ·  your identity
+          </Text>
+
+          {/* Quote block */}
+          <View
+            style={{
+              marginBottom: 28,
+              paddingLeft: 14,
+              borderLeftWidth: 2,
+              borderLeftColor: "rgba(155, 142, 196, 0.3)",
+            }}
+          >
+            <Text className="text-sm italic leading-relaxed mb-2 font-headingItalic text-text-secondary dark:text-text-secondary-dark">
+              {`"नामरूप — name and form —\nis the root of all existence."`}
+            </Text>
+            <Text className="text-xs uppercase tracking-widest font-ui text-accent-secondary-dark">
               Vedic philosophy
             </Text>
           </View>
 
           {/* Heading */}
-          <Text
-            className="text-3xl leading-tight mb-12 text-onboardingWhite90 font-heading"
-          >
+          <Text className="text-4xl leading-tight mb-10 font-headingMediumItalic text-text-primary dark:text-text-primary-dark">
             {typedHeading}
           </Text>
 
-          {/* Name */}
-          <View className="mb-8 text-primarySoft">
+          {/* Name input */}
+          <View
+            onLayout={(e) => { nameY.current = e.nativeEvent.layout.y; }}
+          >
             <SacredInput
               label="your name"
               value={name}
               onChangeText={onNameChange}
               placeholder="Full name"
-              placeholderTextColor={colors.onboardingWhite18}
-              labelColor={colors.onboardingGoldLabel}
-              activeLabelColor={colors.primary}
-              textColor={colors.onboardingWhite90}
-              underlineColor={colors.primary}
-              underlineBaseColor={colors.onboardingWhite06}
+              placeholderTextColor="#a8a4a0"
+              onFocus={() => scrollToY(nameY.current)}
+              returnKeyType="next"
             />
           </View>
 
-          {/* Email */}
-          <View className="mb-12">
+          {/* Email input */}
+          <View
+            onLayout={(e) => { emailY.current = e.nativeEvent.layout.y; }}
+          >
             <SacredInput
               label="your email"
               value={email}
@@ -148,30 +161,23 @@ export default function StepName({ onNext }: StepNameProps) {
               placeholder="you@example.com"
               keyboardType="email-address"
               autoCapitalize="none"
-              placeholderTextColor={colors.onboardingWhite18}
-              labelColor={colors.onboardingGoldLabel}
-              activeLabelColor={colors.primary}
-              textColor={colors.onboardingWhite90}
-              underlineColor={colors.primary}
-              underlineBaseColor={colors.onboardingWhite06}
+              placeholderTextColor="#a8a4a0"
+              onFocus={() => scrollToY(emailY.current)}
+              returnKeyType="done"
             />
           </View>
 
-          {/* <PrimaryGlowButton
-            label="continue →"
-            onPress={onNext}
-            disabled={!valid}
-          /> */}
-          <View className=" p-1 items-end">
+          {/* Continue */}
+          <View className="items-end mt-4">
             <TextButton
               label="continue"
               onPress={onNext}
+              disabled={!valid}
             />
           </View>
 
-
         </View>
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 }

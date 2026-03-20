@@ -2,7 +2,6 @@ import { ViewStyle } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { ReactNode } from "react";
 import { MoodTheme } from "@/types/mood";
-import { colors } from "@/theme/colors";
 
 type Props = {
   theme?: MoodTheme | null;
@@ -15,9 +14,9 @@ type Props = {
 const defaultTheme: MoodTheme = {
   label: "Default",
   emoji: "✨",
-  accent: colors.themeDefaultAccent,
-  soft: colors.themeDefaultSoft,
-  border: colors.themeDefaultBorder,
+  accent: "#4ECDC4",
+  soft: "#1a1a38",
+  border: "#252545",
 };
 
 export default function ThemedCard({
@@ -27,22 +26,13 @@ export default function ThemedCard({
   padding = true,
   className = "",
 }: Props) {
-  const resolvedTheme = theme ?? defaultTheme;
   return (
     <LinearGradient
-      colors={[resolvedTheme.soft, resolvedTheme.soft]}
+      colors={["#1a1a38", "#111128"]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={[
-        {
-          borderColor: resolvedTheme.border,
-          shadowColor: resolvedTheme.accent,
-          shadowOpacity: 0.25,
-          shadowRadius: 25,
-        },
-        style,
-      ]}
-      className={`rounded-3xl border overflow-hidden ${
+      style={[style]}
+      className={`rounded-3xl border border-border dark:border-border-dark overflow-hidden shadow-lg ${
         padding ? "p-6" : ""
       } ${className}`}
     >

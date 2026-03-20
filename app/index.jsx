@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { router } from "expo-router";
 import StartupLoader from "@/components/StartupLoader";
-import { useOnboardingStore } from "@/store/useOnboardingStore";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useOnboardingStore } from "@/store/useOnboardingStore";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
 
 export default function Index() {
   const onboardingCompleted = useOnboardingStore((state) => state.completed);

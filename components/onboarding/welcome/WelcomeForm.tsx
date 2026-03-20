@@ -1,10 +1,8 @@
 import { useEffect, useRef } from "react";
-import { Animated, Pressable, Text, View } from "react-native";
+import { Animated, KeyboardAvoidingView, Platform, Pressable, Text, View } from "react-native";
 import PrimaryGlowButton from "@/components/onboarding/PrimaryGlowButton";
 import SacredInput from "@/components/ScaredInput";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
-import { colors } from "@/theme/colors";
-import { onboardingPalette as C } from "@/theme/onboarding";
 
 type WelcomeFormProps = {
   formOp: Animated.Value;
@@ -82,134 +80,130 @@ export default function WelcomeForm({
   } as const;
 
   return (
-    <Animated.View
-      style={[
-        { position: "absolute", left: 24, right: 24, bottom: 0, paddingBottom: 52 },
-        { opacity: formOp, transform: [{ translateY: formTY }] },
-      ]}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <Text className="mb-4 text-xs tracking-widest font-heading" style={{ color: C.goldOm }}>
-        ॐ  dharma
-      </Text>
-
-      <Animated.Text
-        className="mb-[18px] text-3xl italic leading-tight font-headingItalic"
-        style={{
-          opacity: headOp,
-          transform: [{ translateY: headTY }],
-          color: C.white90,
-        }}
-      >
-        {typedHeadline}
-      </Animated.Text>
-
-      <Animated.View className="mb-4 h-px w-8" style={{ opacity: headOp, backgroundColor: C.goldFaint }} />
-
-      <Animated.Text
-        className="mb-8 text-base italic leading-relaxed font-headingItalic"
-        style={{
-          opacity: subOp,
-          transform: [{ translateY: subTY }],
-          color: C.white30,
-        }}
-      >
-        {typedSubText}
-      </Animated.Text>
-
       <Animated.View
         style={[
-          { width: "100%" },
-          { opacity: inputOp, transform: [{ translateY: inputTY }] },
+          { position: "absolute", left: 24, right: 24, bottom: 0, paddingBottom: 52 },
+          { opacity: formOp, transform: [{ translateY: formTY }] },
         ]}
       >
-        <View>
-          <View className="mb-2 flex-row items-center justify-between">
-            {otpSent ? (
-              <Pressable onPress={onEditPhone} className="rounded-full border px-3 py-1" style={{ borderColor: C.white18 }}>
-                <Text className="text-xs tracking-wide font-ui" style={{ color: C.white30 }}>
-                  edit
-                </Text>
-              </Pressable>
-            ) : (
-              <View />
-            )}
-          </View>
-
-          <View style={{ opacity: otpSent ? 0.82 : 1 }}>
-            <SacredInput
-              label="mobile number"
-              value={phone}
-              onChangeText={setPhone}
-              keyboardType="phone-pad"
-              maxLength={15}
-              editable={!otpSent}
-              prefixText="+91"
-              prefixColor={C.white30}
-              placeholder="98765 43210"
-              placeholderTextColor={C.white18}
-              selectionColor={C.goldLabel}
-              labelColor={C.goldLabel}
-              activeLabelColor={C.goldOm}
-              textColor={C.white90}
-              underlineColor={C.goldLabel}
-              underlineBaseColor={C.white06}
-              errorColor={colors.accentRose}
-            />
-          </View>
-
-          <Animated.View style={[{ overflow: "hidden" }, otpContainerStyle]}>
-            <SacredInput
-              label="otp"
-              value={otp}
-              onChangeText={setOtp}
-              keyboardType="number-pad"
-              maxLength={8}
-              placeholder="123456"
-              placeholderTextColor={C.white18}
-              selectionColor={C.goldLabel}
-              labelColor={C.goldLabel}
-              activeLabelColor={C.goldOm}
-              textColor={C.white90}
-              underlineColor={C.goldLabel}
-              underlineBaseColor={C.white06}
-              errorColor={colors.accentRose}
-            />
-          </Animated.View>
-        </View>
-      </Animated.View>
-
-      {error ? (
-        <Text className="mt-4 text-sm font-ui" style={{ color: colors.accentRose }}>
-          {error}
+        <Text className="mb-4 text-xs uppercase tracking-[0.2em] font-ui text-accent-secondary dark:text-accent-secondary-dark">
+          ॐ  mydharma
         </Text>
-      ) : null}
 
-      <Animated.View
-        style={[
-          { marginTop: 24 },
-          { opacity: btnOp, transform: [{ translateY: btnTY }] },
-        ]}
-      >
-        <PrimaryGlowButton
-          label={
-            otpSent
-              ? isLoading
-                ? "verifying..."
-                : "continue →"
-              : isLoading
-                ? "sending..."
-                : "send otp →"
-          }
-          onPress={otpSent ? onVerifyOtp : onRequestOtp}
-          disabled={otpSent ? !canVerifyOtp || isLoading : !canRequestOtp || isLoading}
-        />
-        <Text
-          className="mt-4xl text-center text-xs leading-relaxed tracking-wide font-ui"
-          style={{ color: C.privacy }}
+        <Animated.Text
+          className="mb-[18px] text-5xl leading-tight font-headingMediumItalic text-text-primary dark:text-text-primary-dark"
+          style={{
+            opacity: headOp,
+            transform: [{ translateY: headTY }],
+          }}
         >
-          ∴  your data is sacred · encrypted · never sold
-        </Text>
+          {typedHeadline}
+        </Animated.Text>
+        <Animated.Text className="absolute" style={{ opacity: 0 }} />
+
+        <Animated.View className="mb-4 h-px w-8 bg-border dark:bg-border-dark" style={{ opacity: headOp }} />
+
+        <Animated.Text
+          className="mb-8 text-sm leading-relaxed font-heading text-text-secondary dark:text-text-secondary-dark"
+          style={{
+            opacity: subOp,
+            transform: [{ translateY: subTY }],
+          }}
+        >
+          {typedSubText}
+        </Animated.Text>
+
+        <Animated.View
+          style={[
+            { width: "100%" },
+            { opacity: inputOp, transform: [{ translateY: inputTY }] },
+          ]}
+        >
+          <View>
+            {/* Label row — inline with edit button */}
+            <View className="mb-2 flex-row items-center justify-between">
+              <Text className="text-xs uppercase tracking-widest font-ui text-accent-secondary dark:text-accent-secondary-dark">
+                mobile number
+              </Text>
+              {otpSent && (
+                <Pressable
+                  onPress={onEditPhone}
+                  className="rounded-full border border-border dark:border-border-dark px-3 py-1"
+                >
+                  <Text className="text-xs tracking-wide font-ui text-text-secondary dark:text-text-secondary-dark">
+                    edit
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+
+            <View style={{ opacity: otpSent ? 0.7 : 1 }}>
+              <SacredInput
+                value={phone}
+                onChangeText={setPhone}
+                keyboardType="phone-pad"
+                maxLength={15}
+                editable={!otpSent}
+                prefixText="+91"
+                placeholder="98765 43210"
+                placeholderTextColor="#6b6878"
+                selectionColor="#D4960A"
+              />
+            </View>
+
+            <Animated.View style={[{ overflow: "hidden" }, otpContainerStyle]}>
+              <Text className="mb-2 text-xs uppercase tracking-widest font-ui text-accent-secondary dark:text-accent-secondary-dark">
+                one-time password
+              </Text>
+              <SacredInput
+                value={otp}
+                onChangeText={setOtp}
+                keyboardType="number-pad"
+                maxLength={8}
+                placeholder="123456"
+                placeholderTextColor="#6b6878"
+                selectionColor="#D4960A"
+              />
+            </Animated.View>
+          </View>
+        </Animated.View>
+
+        {error ? (
+          <Text className="mt-4 text-sm font-ui text-error dark:text-error-dark">
+            {error}
+          </Text>
+        ) : null}
+
+        <Animated.View
+          style={[
+            { marginTop: 24 },
+            { opacity: btnOp, transform: [{ translateY: btnTY }] },
+          ]}
+        >
+          <PrimaryGlowButton
+            label={
+              otpSent
+                ? isLoading
+                  ? "verifying..."
+                  : "continue →"
+                : isLoading
+                  ? "sending..."
+                  : "send otp →"
+            }
+            onPress={otpSent ? onVerifyOtp : onRequestOtp}
+            disabled={otpSent ? !canVerifyOtp || isLoading : !canRequestOtp || isLoading}
+          />
+          <Text
+            className="mt-4 text-center text-xs leading-relaxed tracking-wide font-ui text-text-secondary dark:text-text-secondary-dark"
+          >
+            ∴  your data is sacred · encrypted · never sold
+          </Text>
+        </Animated.View>
       </Animated.View>
-    </Animated.View>
+    </KeyboardAvoidingView>
   );
 }

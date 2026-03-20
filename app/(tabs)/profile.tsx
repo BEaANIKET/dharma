@@ -6,7 +6,6 @@ import ProfileStreakCard from "@/components/profile/ProfileStreakCard";
 import ProfileStatsRow from "@/components/profile/ProfileStatsRow";
 import ProfilePreferences from "@/components/profile/ProfilePreferences";
 import ProfileSettings from "@/components/profile/ProfileSettings";
-import { colors } from "@/theme/colors";
 import { useAuthStore } from "@/store/useAuthStore";
 import { friendlyMessage } from "@/services/api";
 
@@ -56,17 +55,17 @@ export default function ProfileScreen() {
         contentContainerStyle={{ paddingTop: insets.top + 14, paddingBottom: insets.bottom + 30 }}
         showsVerticalScrollIndicator={false}
       >
-        <Text className="mb-6 text-3xl leading-tight font-heading" style={{ color: colors.textPrimary }}>
+        <Text className="mb-6 text-3xl leading-tight font-heading text-text-primary dark:text-text-primary-dark">
           Your Journey
         </Text>
 
         {loading ? (
-          <Text className="mb-4 text-sm font-ui" style={{ color: colors.textSecondary }}>
+          <Text className="mb-4 text-sm font-ui text-secondary dark:text-secondary-dark">
             Updating your journey...
           </Text>
         ) : null}
         {error ? (
-          <Text className="mb-4 text-sm font-ui" style={{ color: colors.accentRose }}>
+          <Text className="mb-4 text-sm font-ui text-error dark:text-error-dark">
             {error}
           </Text>
         ) : null}

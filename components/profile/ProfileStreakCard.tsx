@@ -1,7 +1,6 @@
 import { Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { colors } from "@/theme/colors";
 import { WEEK_LABELS } from "./data";
 
 interface ProfileStreakCardProps {
@@ -13,23 +12,18 @@ export default function ProfileStreakCard({ streak }: ProfileStreakCardProps) {
 
   return (
     <View
-      className="mb-6 rounded-3xl border p-6"
-      style={{
-        borderColor: `${colors.primary}40`,
-        backgroundColor: `${colors.primary}14`,
-      }}
+      className="mb-6 rounded-3xl border border-highlight/30 bg-highlight/10 p-6"
     >
       <View
-        className="absolute -right-6 -top-6 h-28 w-28 rounded-full"
-        style={{ backgroundColor: `${colors.primary}1A` }}
+        className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-highlight/10"
       />
 
       <View className="items-center">
-        <Ionicons name="flame-outline" size={32} color={colors.primary} />
-        <Text className="mt-1 text-3xl leading-tight font-heading" style={{ color: colors.primary }}>
+        <Ionicons name="flame-outline" size={32} color="#FFD25A" />
+        <Text className="mt-1 text-3xl leading-tight font-heading text-highlight dark:text-highlight-dark">
           {streak}
         </Text>
-        <Text className="mt-1 text-sm font-ui" style={{ color: colors.textSecondary }}>
+        <Text className="mt-1 text-sm font-ui text-secondary dark:text-secondary-dark">
           Day Streak
         </Text>
 
@@ -40,20 +34,17 @@ export default function ProfileStreakCard({ streak }: ProfileStreakCardProps) {
               <View key={`${day}-${index}`} className="mx-[3px] items-center">
                 {isActive ? (
                   <LinearGradient
-                    colors={[colors.primary, colors.secondary]}
+                    colors={["#FFD25A", "#D4960A"]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     className="h-7 w-7 items-center justify-center rounded-full"
                   >
-                    <Ionicons name="checkmark" size={12} color={colors.backgroundDeep} />
+                    <Ionicons name="checkmark" size={12} color="#111128" />
                   </LinearGradient>
                 ) : (
-                  <View
-                    className="h-7 w-7 items-center justify-center rounded-full border"
-                    style={{ borderColor: colors.cardBorder, backgroundColor: colors.backgroundSoft }}
-                  />
+                  <View className="h-7 w-7 items-center justify-center rounded-full border border-border dark:border-border-dark bg-surface dark:bg-surface-dark" />
                 )}
-                <Text className="mt-1 text-xs font-ui" style={{ color: colors.textMuted }}>
+                <Text className="mt-1 text-xs font-ui text-secondary dark:text-secondary-dark">
                   {day}
                 </Text>
               </View>
