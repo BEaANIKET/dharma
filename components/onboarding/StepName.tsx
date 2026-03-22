@@ -2,8 +2,6 @@ import {
   Text,
   View,
   ScrollView,
-  KeyboardAvoidingView,
-  Platform,
 } from "react-native";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
@@ -87,17 +85,7 @@ export default function StepName({ onNext }: StepNameProps) {
   };
 
   return (
-    <KeyboardAvoidingView
-      className="flex-1"
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 24 : 0}
-    >
-      {/* ── Watermark ॐ ── */}
-      <View className="ml-3 mt-16">
-        <FloatingOm size={24} opacity={0.7} top={80} left={35} />
-      </View>
-
-
+    <View className="flex-1">
       <ScrollView
         ref={scrollRef}
         contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24 }}
@@ -106,7 +94,14 @@ export default function StepName({ onNext }: StepNameProps) {
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
       >
-        <View className="flex-1 justify-center pb-16 pt-12">
+        <View style={{ flexGrow: 1 }} />
+
+        {/* ── Watermark ॐ — sits just above the content ── */}
+        <View className=" mb-4">
+          <FloatingOm size={24} opacity={0.7} top={0} left={35} />
+        </View>
+
+        <View className="pb-16">
 
           {/* Step label */}
           <Text className="mb-8 text-xs uppercase tracking-[0.2em] font-ui text-accent-secondary dark:text-accent-secondary-dark opacity-70">
@@ -177,7 +172,9 @@ export default function StepName({ onNext }: StepNameProps) {
           </View>
 
         </View>
+
+        <View style={{ flexGrow: 1 }} />
       </ScrollView>
-    </KeyboardAvoidingView>
+    </View>
   );
 }

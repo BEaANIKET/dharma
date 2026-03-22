@@ -1,34 +1,31 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  Animated,
-  Easing,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
-import { Audio, InterruptionModeAndroid, InterruptionModeIOS, Video } from "expo-av";
-import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import * as Haptics from "expo-haptics";
-import CosmicBackground from "@/components/onboarding/CosmicBackground";
-import WelcomeVideoLayer from "@/components/onboarding/welcome/WelcomeVideoLayer";
-import WelcomeVerseOverlay from "@/components/onboarding/welcome/WelcomeVerseOverlay";
+import GradientBackground from "@/components/GradientBackground";
 import WelcomeForm from "@/components/onboarding/welcome/WelcomeForm";
 import WelcomeSkipButton from "@/components/onboarding/welcome/WelcomeSkipButton";
+import WelcomeVerseOverlay from "@/components/onboarding/welcome/WelcomeVerseOverlay";
+import WelcomeVideoLayer from "@/components/onboarding/welcome/WelcomeVideoLayer";
 import StartupLoader from "@/components/StartupLoader";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
 import {
-  onboardingFormCopy,
   onboardingPalette as C,
+  onboardingFormCopy,
   onboardingTimings,
   onboardingVerses as VERSES,
 } from "@/theme/onboarding";
-import GradientBackground from "@/components/GradientBackground";
+import { Audio, InterruptionModeAndroid, InterruptionModeIOS, Video } from "expo-av";
+import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Animated,
+  Easing,
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const {
   INTRO_MAX_MS,
@@ -462,10 +459,10 @@ export default function OnboardingWelcome() {
       try {
         await typingSoundRef.current?.stopAsync();
         await typingSoundRef.current?.unloadAsync();
-      } catch {}
+      } catch { }
       try {
         await stopVideo();
-      } catch {}
+      } catch { }
       // TODO: restore isNewUser check — bypassed for testing details flow
       router.replace("/onboarding/details");
     } catch {
@@ -484,10 +481,8 @@ export default function OnboardingWelcome() {
     <GradientBackground>
       <KeyboardAvoidingView
         className="flex-1"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+        behavior="padding"
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View className="flex-1">
 
             {/* ── Video layer (fades out cinematically) ── */}
@@ -530,28 +525,35 @@ export default function OnboardingWelcome() {
 
             {/* ── Form phase content ── */}
             {phase === "form" && (
-              <WelcomeForm
-                formOp={formOp}
-                formTY={formTY}
-                headOp={headOp}
-                headTY={headTY}
-                subOp={subOp}
-                subTY={subTY}
-                inputOp={inputOp}
-                inputTY={inputTY}
-                btnOp={btnOp}
-                btnTY={btnTY}
-                typedHeadline={typedHeadline}
-                typedSubText={typedSubText}
-                otp={otp}
-                setOtp={setOtp}
-                otpSent={otpSent}
-                isLoading={authLoading}
-                error={authError}
-                onRequestOtp={onRequestOtp}
-                onVerifyOtp={onVerifyOtp}
-                onEditPhone={onEditPhone}
-              />
+              <ScrollView
+                contentContainerStyle={{ flexGrow: 1 }}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="interactive"
+                showsVerticalScrollIndicator={false}
+              >
+                <WelcomeForm
+                  formOp={formOp}
+                  formTY={formTY}
+                  headOp={headOp}
+                  headTY={headTY}
+                  subOp={subOp}
+                  subTY={subTY}
+                  inputOp={inputOp}
+                  inputTY={inputTY}
+                  btnOp={btnOp}
+                  btnTY={btnTY}
+                  typedHeadline={typedHeadline}
+                  typedSubText={typedSubText}
+                  otp={otp}
+                  setOtp={setOtp}
+                  otpSent={otpSent}
+                  isLoading={authLoading}
+                  error={authError}
+                  onRequestOtp={onRequestOtp}
+                  onVerifyOtp={onVerifyOtp}
+                  onEditPhone={onEditPhone}
+                />
+              </ScrollView>
             )}
 
             {/* ── Skip (video phase only) ── */}
@@ -572,7 +574,6 @@ export default function OnboardingWelcome() {
             )}
 
           </View>
-        </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
     </GradientBackground>
   );

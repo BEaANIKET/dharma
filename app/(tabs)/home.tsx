@@ -1,14 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ScrollView } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import GradientBackground from "@/components/GradientBackground";
 import HomeContentPhase, { HomeContentTopBar } from "@/components/home/HomeContentPhase";
 import HomeLoadingPhase from "@/components/home/HomeLoadingPhase";
 import HomeMoodSelection from "@/components/home/HomeMoodSelection";
 import { MainType, resolveRecipeForMood, ThumbDirection } from "@/components/home/data";
 import { friendlyMessage, recipeApi, RecipeApiResponse } from "@/services/api";
-import { useMoodStore } from "@/store/useMoodStore";
 import { useMetadataStore } from "@/store/useMetadataStore";
+import { useMoodStore } from "@/store/useMoodStore";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ScrollView } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type HomePhase = "selection" | "loading" | "content";
 
@@ -121,63 +121,63 @@ export default function MoodScreen() {
 
   return (
     <GradientBackground>
-      <ScrollView
-        ref={scrollRef}
-        className="flex-1 px-5"
-        contentContainerStyle={{
-          paddingTop: 14,
-          paddingBottom: insets.bottom + 30,
-        }}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag"
-        showsVerticalScrollIndicator={false}
-        stickyHeaderIndices={phase === "content" && moodLabel ? [0] : undefined}
-      >
-        {phase === "content" && moodLabel ? (
-          <HomeContentTopBar
-            moodLabel={moodLabel}
-            moodEmoji={moodEmoji}
-            onReset={resetFlow}
-          />
-        ) : null}
+        <ScrollView
+          ref={scrollRef}
+          className="flex-1 px-5"
+          contentContainerStyle={{
+            paddingTop: 14,
+            paddingBottom: insets.bottom + 30,
+          }}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+          showsVerticalScrollIndicator={false}
+          stickyHeaderIndices={phase === "content" && moodLabel ? [0] : undefined}
+        >
+          {phase === "content" && moodLabel ? (
+            <HomeContentTopBar
+              moodLabel={moodLabel}
+              moodEmoji={moodEmoji}
+              onReset={resetFlow}
+            />
+          ) : null}
 
-        {phase === "selection" ? (
-          <HomeMoodSelection
-            selectedMood={selectedMood}
-            context={context}
-            onChangeContext={setContext}
-            onSelectMood={setMood}
-            onSubmit={submitMood}
-          />
-        ) : null}
+          {phase === "selection" ? (
+            <HomeMoodSelection
+              selectedMood={selectedMood}
+              context={context}
+              onChangeContext={setContext}
+              onSelectMood={setMood}
+              onSubmit={submitMood}
+            />
+          ) : null}
 
-        {phase === "loading" ? (
-          <HomeLoadingPhase moodEmoji={moodEmoji} />
-        ) : null}
+          {phase === "loading" ? (
+            <HomeLoadingPhase moodEmoji={moodEmoji} />
+          ) : null}
 
-        {phase === "content" && moodLabel ? (
-          <HomeContentPhase
-            moodLabel={moodLabel}
-            moodEmoji={moodEmoji}
-            context={context}
-            mainType={mainType}
-            recipe={resolvedRecipe}
-            recipeError={recipeError}
-            onRetryRecipe={submitMood}
-            onRequestScrollTo={(y) =>
-              scrollRef.current?.scrollTo({ y, animated: true })
-            }
-            isPlaying={isPlaying}
-            breathingActive={breathingActive}
-            thumbs={thumbs}
-            onReset={resetFlow}
-            onTogglePlay={() => setIsPlaying((prev) => !prev)}
-            onToggleBreathing={() => setBreathingActive((prev) => !prev)}
-            onThumb={handleThumb}
-            hideTopBar
-          />
-        ) : null}
-      </ScrollView>
+          {phase === "content" && moodLabel ? (
+            <HomeContentPhase
+              moodLabel={moodLabel}
+              moodEmoji={moodEmoji}
+              context={context}
+              mainType={mainType}
+              recipe={resolvedRecipe}
+              recipeError={recipeError}
+              onRetryRecipe={submitMood}
+              onRequestScrollTo={(y) =>
+                scrollRef.current?.scrollTo({ y, animated: true })
+              }
+              isPlaying={isPlaying}
+              breathingActive={breathingActive}
+              thumbs={thumbs}
+              onReset={resetFlow}
+              onTogglePlay={() => setIsPlaying((prev) => !prev)}
+              onToggleBreathing={() => setBreathingActive((prev) => !prev)}
+              onThumb={handleThumb}
+              hideTopBar
+            />
+          ) : null}
+        </ScrollView>
     </GradientBackground>
   );
 }

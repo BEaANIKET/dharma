@@ -1,16 +1,10 @@
 import { useState } from "react";
-import {
-  View,
-  Platform,
-  SafeAreaView,
-  KeyboardAvoidingView,
-} from "react-native";
+import { KeyboardAvoidingView, SafeAreaView, View } from "react-native";
 
-import StepName from "@/components/onboarding/StepName";
-import StepAge from "@/components/onboarding/StepAge";
-import StepGender from "@/components/onboarding/StepGender";
-import StepComplete from "@/components/onboarding/StepComplete";
 import GradientBackground from "@/components/GradientBackground";
+import StepAge from "@/components/onboarding/StepAge";
+import StepComplete from "@/components/onboarding/StepComplete";
+import StepName from "@/components/onboarding/StepName";
 
 export default function OnboardingDetails() {
   const [step, setStep] = useState(0);
@@ -21,11 +15,7 @@ export default function OnboardingDetails() {
   return (
     <GradientBackground>
       <SafeAreaView className="flex-1">
-        <KeyboardAvoidingView
-          className="flex-1"
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
-        >
+        <KeyboardAvoidingView className="flex-1" behavior="padding">
           <View className="flex-1">
             {step === 0 && <StepName onNext={next} />}
             {step === 1 && <StepAge onNext={next} onBack={back} />}

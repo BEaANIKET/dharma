@@ -96,21 +96,21 @@ export default function StepAge({ onNext, onBack }: StepAgeProps) {
   }, [playTypeSound]);
 
   return (
-    <View className="flex-1 px-6 justify-center">
-
-      {/* Floating Dharma */}
-      <View className="ml-3 mt-16">
-        <FloatingOm size={24} opacity={0.7} top={80} left={35} />
-      </View>
-
+    <View className="flex-1 px-6">
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag"
-        automaticallyAdjustKeyboardInsets
+        keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
       >
-        <View className="flex-1 justify-center ">
+        <View style={{ flexGrow: 1 }} />
+
+        {/* Floating Dharma — sits just above content */}
+        <View className="mb-4">
+          <FloatingOm size={24} opacity={0.7} top={0} left={35} />
+        </View>
+
+        <View className="pb-16">
 
           {/* Step label */}
           <Text className="mb-8 text-xs uppercase tracking-[0.2em] font-ui text-accent-secondary dark:text-accent-secondary-dark opacity-70">
@@ -165,6 +165,8 @@ export default function StepAge({ onNext, onBack }: StepAgeProps) {
           </View>
 
         </View>
+
+        <View style={{ flexGrow: 1 }} />
       </ScrollView>
     </View>
   );

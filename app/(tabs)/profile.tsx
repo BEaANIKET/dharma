@@ -52,7 +52,7 @@ export default function ProfileScreen() {
     <GradientBackground>
       <ScrollView
         className="flex-1 px-5"
-        contentContainerStyle={{ paddingTop: insets.top + 14, paddingBottom: insets.bottom + 30 }}
+        contentContainerStyle={{ paddingTop: 14, paddingBottom: insets.bottom + 30 }}
         showsVerticalScrollIndicator={false}
       >
         <Text className="mb-6 text-3xl leading-tight font-heading text-text-primary dark:text-text-primary-dark">

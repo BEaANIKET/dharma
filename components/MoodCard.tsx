@@ -25,10 +25,10 @@ export default function MoodCard({
     return (
       <Pressable
         onPress={onPress}
-        className={`mt-3 w-full flex-row items-center rounded-3xl border px-5 py-4 ${selectedClass}`}
+        className={`mt-3 w-full flex-row items-center justify-center rounded-3xl border px-5 py-4 ${selectedClass}`}
       >
         <Text className="text-3xl">{emoji}</Text>
-        <View className="ml-4 flex-1">
+        <View className="ml-4">
           <Text
             className={
               isSelected

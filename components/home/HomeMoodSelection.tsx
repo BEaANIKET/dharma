@@ -1,8 +1,8 @@
-import { ActivityIndicator, Pressable, Text, TextInput, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import MoodCard from "@/components/MoodCard";
-import { textStyles } from "@/theme/typography";
 import { useMetadataStore } from "@/store/useMetadataStore";
+import { textStyles } from "@/theme/typography";
+import { Ionicons } from "@expo/vector-icons";
+import { ActivityIndicator, Pressable, Text, TextInput, View } from "react-native";
 
 interface HomeMoodSelectionProps {
   selectedMood: string | null;
@@ -55,7 +55,7 @@ export default function HomeMoodSelection({
                 key={last.id}
                 emoji={last.emoji}
                 label={last.label}
-                description={last.description}
+                description={""}
                 isSelected={selectedMood === last.value}
                 fullWidth
                 onPress={() => onSelectMood(last.value)}
