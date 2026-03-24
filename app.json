@@ -27,6 +27,7 @@
       "favicon": "./assets/images/dark-app-icon-1024x1024.png"
     },
     "plugins": [
+      "./plugins/withReleaseSigning",
       "expo-router",
       [
         "expo-splash-screen",
@@ -41,7 +42,8 @@
           }
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-speech-recognition"
     ],
     "experiments": {
       "typedRoutes": true,

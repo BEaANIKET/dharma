@@ -1,7 +1,21 @@
+import { textStyles } from "@/theme/typography";
 import { useMemo, useRef, useState } from "react";
-import { Animated, Dimensions, Pressable, ScrollView, Text, View } from "react-native";
+import {
+  Dimensions,
+  LayoutAnimation,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  UIManager,
+  View,
+} from "react-native";
 import BreathingVisual from "../BreathingVisual";
 import { ResolvedHomeRecipe } from "../data";
+
+if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_WIDTH = SCREEN_WIDTH - 40;
@@ -12,11 +26,13 @@ interface BreathingCardProps {
   onToggleBreathing: () => void;
 }
 
-export default function BreathingCard({ breathing, breathingActive, onToggleBreathing }: BreathingCardProps) {
+export default function BreathingCard({
+  breathing,
+  breathingActive,
+  onToggleBreathing,
+}: BreathingCardProps) {
   const scrollRef = useRef<ScrollView>(null);
-  const scale = useRef(new Animated.Value(1)).current;
   const [page, setPage] = useState(0);
-  const [secondsLeft] = useState(4);
   const [tried, setTried] = useState(false);
 
   const phases = useMemo(() => {
@@ -26,18 +42,26 @@ export default function BreathingCard({ breathing, breathingActive, onToggleBrea
         seconds: phase.seconds,
       }));
     }
-    return [{ label: "INHALE", seconds: 4 }, { label: "HOLD", seconds: 4 }, { label: "EXHALE", seconds: 6 }];
+    return [
+      { label: "INHALE", seconds: 4 },
+      { label: "HOLD", seconds: 4 },
+      { label: "EXHALE", seconds: 6 },
+    ];
   }, [breathing.breath_phases]);
-
-  void phases;
 
   const handleTried = () => {
     setTried(true);
     if (breathingActive) onToggleBreathing();
+
+    // Shrink card height then scroll to page 2
+    LayoutAnimation.configureNext(
+      LayoutAnimation.create(400, "easeInEaseOut", "opacity"),
+    );
+
     setTimeout(() => {
       scrollRef.current?.scrollTo({ x: CARD_WIDTH + 16, animated: true });
       setPage(1);
-    }, 500);
+    }, 150);
   };
 
   return (
@@ -61,14 +85,17 @@ export default function BreathingCard({ breathing, breathingActive, onToggleBrea
         horizontal
         showsHorizontalScrollIndicator={false}
         pagingEnabled
-        onScroll={(e) => setPage(Math.round(e.nativeEvent.contentOffset.x / CARD_WIDTH))}
+        scrollEnabled={tried}
+        onScroll={(e) =>
+          setPage(Math.round(e.nativeEvent.contentOffset.x / CARD_WIDTH))
+        }
         scrollEventThrottle={16}
         contentContainerClassName="gap-4"
       >
         {/* Page 1: Practice */}
         <View
           className="rounded-3xl bg-surface dark:bg-surface-dark border border-border dark:border-border-dark p-4"
-          style={{ width: CARD_WIDTH, minHeight: 620 }}
+          style={{ width: CARD_WIDTH }}
         >
           {/* Eyebrow label */}
           <Text className="text-xs uppercase tracking-widest font-uiSemiBold text-accent-primary dark:text-accent-primary-dark">
@@ -85,19 +112,26 @@ export default function BreathingCard({ breathing, breathingActive, onToggleBrea
                 {breathing.name}
               </Text>
               <Text className="text-sm font-ui text-secondary dark:text-secondary-dark">
-                {breathing.pattern} · {breathing.duration}
+                {breathing.pattern}
               </Text>
+              <View className="mt-3 flex-row items-center gap-2">
+                <View className="bg-accent-primary dark:bg-accent-primary-dark border border-highlight/25 dark:border-highlight-dark/25 px-2 py-1 rounded-md">
+                  <Text
+                    className={`${textStyles.label} uppercase text-bg dark:text-bg-dark`}
+                  >
+                    BREATHING
+                  </Text>
+                </View>
+                <Text className="text-sm font-ui text-secondary dark:text-secondary-dark">
+                  {breathing.duration}
+                </Text>
+              </View>
             </View>
           </View>
 
           {/* Breathing orb */}
           <Pressable onPress={onToggleBreathing} className="items-center py-8">
-            <BreathingVisual
-              active={breathingActive}
-              tried={tried}
-              scale={scale}
-              secondsLeft={secondsLeft}
-            />
+            <BreathingVisual active={breathingActive} tried={tried} phases={phases} />
           </Pressable>
 
           {/* Why this helps */}
@@ -136,7 +170,9 @@ export default function BreathingCard({ breathing, breathingActive, onToggleBrea
             onPress={handleTried}
             className="bg-accent-primary dark:bg-accent-primary-dark rounded-2xl py-4 mt-4 items-center"
           >
-            <Text className="text-base font-uiBold text-bg dark:text-bg-dark">I did this practice</Text>
+            <Text className="text-base font-uiBold text-bg dark:text-bg-dark">
+              I did this practice
+            </Text>
           </Pressable>
         </View>
 

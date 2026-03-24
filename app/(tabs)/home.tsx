@@ -7,7 +7,7 @@ import { friendlyMessage, recipeApi, RecipeApiResponse } from "@/services/api";
 import { useMetadataStore } from "@/store/useMetadataStore";
 import { useMoodStore } from "@/store/useMoodStore";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ScrollView } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type HomePhase = "selection" | "loading" | "content";
@@ -121,15 +121,20 @@ export default function MoodScreen() {
 
   return (
     <GradientBackground>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={insets.top + 60}
+      >
         <ScrollView
           ref={scrollRef}
           className="flex-1 px-5"
           contentContainerStyle={{
+            flexGrow: 1,
             paddingTop: 14,
             paddingBottom: insets.bottom + 30,
           }}
           keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="interactive"
           showsVerticalScrollIndicator={false}
           stickyHeaderIndices={phase === "content" && moodLabel ? [0] : undefined}
         >
@@ -148,6 +153,7 @@ export default function MoodScreen() {
               onChangeContext={setContext}
               onSelectMood={setMood}
               onSubmit={submitMood}
+              scrollRef={scrollRef}
             />
           ) : null}
 
@@ -177,7 +183,9 @@ export default function MoodScreen() {
               hideTopBar
             />
           ) : null}
+
         </ScrollView>
+      </KeyboardAvoidingView>
     </GradientBackground>
   );
 }

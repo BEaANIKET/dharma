@@ -1,8 +1,9 @@
+import ContextInput from "@/components/ContextInput";
 import MoodCard from "@/components/MoodCard";
 import { useMetadataStore } from "@/store/useMetadataStore";
 import { textStyles } from "@/theme/typography";
-import { Ionicons } from "@expo/vector-icons";
-import { ActivityIndicator, Pressable, Text, TextInput, View } from "react-native";
+import { RefObject } from "react";
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
 
 interface HomeMoodSelectionProps {
   selectedMood: string | null;
@@ -10,6 +11,7 @@ interface HomeMoodSelectionProps {
   onChangeContext: (value: string) => void;
   onSelectMood: (value: string) => void;
   onSubmit: () => void;
+  scrollRef?: RefObject<ScrollView | null>;
 }
 
 export default function HomeMoodSelection({
@@ -18,6 +20,7 @@ export default function HomeMoodSelection({
   onChangeContext,
   onSelectMood,
   onSubmit,
+  scrollRef,
 }: HomeMoodSelectionProps) {
   const moods = useMetadataStore((s) => s.moods);
   const isLoadingMoods = useMetadataStore((s) => s.isLoading);
@@ -65,23 +68,13 @@ export default function HomeMoodSelection({
         </>
       )}
 
-      <View
-        className="mt-5 flex-row items-center rounded-2xl border border-border dark:border-border-dark bg-surface dark:bg-surface-dark px-4"
-      >
-        <TextInput
-          value={context}
-          onChangeText={onChangeContext}
-          placeholder="What happened today? I'm listening... "
-          placeholderTextColor="#6b6878"
-          className="h-14 flex-1 text-xl font-ui text-primary dark:text-parchment"
-        />
-        <Pressable
-          onPress={onSubmit}
-          className={`h-11 w-11 items-center justify-center rounded-2xl ${selectedMood ? "bg-accent-primary dark:bg-accent-primary-dark" : "bg-surface dark:bg-surface-dark opacity-50"}`}
-        >
-          <Ionicons name="paper-plane-outline" size={20} color="#09090F" />
-        </Pressable>
-      </View>
+      <ContextInput
+        value={context}
+        onChangeText={onChangeContext}
+        onSubmit={onSubmit}
+        canSubmit={!!selectedMood}
+        scrollRef={scrollRef}
+      />
 
       {selectedMood ? (
         <Pressable

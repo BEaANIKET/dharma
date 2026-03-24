@@ -82,10 +82,13 @@ export default function VerseCard({ recipe, isPlaying, onTogglePlay }: VerseCard
       </Text>
 
       {/* Title row */}
-      <View className="mt-3 flex-row items-start gap-[14px]">
-        <View className="flex-1 pr-2">
-          <Text className="text-2xl font-headingBold text-primary dark:text-text-primary-dark">
-            {verse.title}
+      <View className="mt-3 flex-row items-center gap-[14px]">
+        <View className="h-12 w-12 items-center justify-center rounded-2xl bg-accent-primary/10 dark:bg-accent-primary-dark/10 border border-accent-primary/30 dark:border-accent-primary-dark/30">
+          <Text className="text-2xl">{verse.emoji}</Text>
+        </View>
+        <View className="flex-1">
+          <Text className="text-2xl font-headingBold text-primary dark:text-text-primary-dark" numberOfLines={1}>
+            {verse.title.length > 18 ? verse.title.slice(0, 18) + "…" : verse.title}
           </Text>
           <Text className="text-sm font-ui text-secondary dark:text-secondary-dark">
             {verse.subtitle}
@@ -99,7 +102,7 @@ export default function VerseCard({ recipe, isPlaying, onTogglePlay }: VerseCard
               </Text>
             </View>
             <Text className="text-sm font-ui text-secondary dark:text-secondary-dark">
-              5 MINS
+              5 min
             </Text>
           </View>
         </View>
