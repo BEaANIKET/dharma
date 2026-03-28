@@ -129,10 +129,7 @@ export default function VerseCard({ recipe, isPlaying, onTogglePlay }: VerseCard
       {/* Translation / Decode block */}
       <View className="mt-3 rounded-2xl bg-highlight/5 dark:bg-highlight-dark/10 border border-highlight/15 dark:border-highlight-dark/20 p-5 items-center">
         <View className="rounded-xl px-5 py-3 items-center mb-4 bg-highlight/15 dark:bg-highlight-dark/20 border border-highlight/20 dark:border-highlight-dark/25">
-          <Text className="text-lg mb-1">🧠</Text>
-          <Text className={`${textStyles.label} text-highlight dark:text-highlight-dark uppercase`}>
-            Decode the Wisdom
-          </Text>
+          <Text className={`${textStyles.label} text-highlight dark:text-highlight-dark uppercase`}>🧠 Decode the Wisdom</Text>
         </View>
         <Text className="text-center text-sm leading-relaxed font-uiMedium text-secondary dark:text-secondary-dark">
           "{verse.english}"

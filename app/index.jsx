@@ -1,8 +1,8 @@
-import StartupLoader from "@/components/StartupLoader";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
+import { Image, View } from "react-native";
 
 export default function Index() {
   const onboardingCompleted = useOnboardingStore((state) => state.completed);
@@ -48,9 +48,12 @@ export default function Index() {
   }, [isAuthenticated, isBootstrapping, onboardingCompleted, user?.name]);
 
   return (
-    <StartupLoader
-      message="Starting mydharma..."
-      subMessage="Checking session and loading your space"
-    />
+    <View className="flex-1">
+      <Image
+        source={require("@/assets/images/dark-splash-android.png")}
+        className="w-full h-full"
+        resizeMode="cover"
+      />
+    </View>
   );
 }

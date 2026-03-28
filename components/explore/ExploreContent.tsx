@@ -1,91 +1,225 @@
-import SectionLabel from "@/components/cosmic/ui/SectionLabel";
-import { useRef, useState } from "react";
-import { Animated, ScrollView, Text, View } from "react-native";
+import { useCallback, useRef, useState } from "react";
+import {
+  Dimensions,
+  FlatList,
+  LayoutChangeEvent,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+  ViewToken,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import CategoryChip from "./CategoryChip";
-import DharmaCard, { OVERLAP, VISIBLE_STEP } from "./DharmaCard";
-import { CATEGORIES, DHARMA_CARDS } from "./data";
+import { PD } from "@/components/cosmic/panchangData";
+
+import SacredSeal from "./SacredSeal";
+import {
+  CardCaution,
+  CardGuide,
+  CardMoment,
+  CardPanchang,
+  CardScore,
+  CardVibe,
+} from "./cards";
+import LibraryCard from "./LibraryCard";
+import { CARD_DEFS, CardDef, LIBRARY_CARDS } from "./data";
+
+const { width: SCREEN_W } = Dimensions.get("window");
+const CARD_H_PAD = 9; // horizontal padding around each card sheet
+
+function CardContent({ cardKey }: { cardKey: string }) {
+  switch (cardKey) {
+    case "vibe":
+      return <CardVibe />;
+    case "score":
+      return <CardScore />;
+    case "moment":
+      return <CardMoment />;
+    case "caution":
+      return <CardCaution />;
+    case "guide":
+      return <CardGuide />;
+    case "panchang":
+      return <CardPanchang />;
+    default:
+      return null;
+  }
+}
 
 export default function ExploreContent() {
   const insets = useSafeAreaInsets();
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const [activeCategory, setActiveCategory] = useState("all");
+  const flatListRef = useRef<FlatList>(null);
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [absorbed, setAbsorbed] = useState<Set<number>>(new Set([0]));
+  const [listHeight, setListHeight] = useState(0);
+  const [expanded, setExpanded] = useState<string | null>(null);
 
-  return (
-    <Animated.ScrollView
-      className="flex-1 px-5"
-      contentContainerStyle={{
-        paddingTop: 16,
-        paddingBottom: insets.bottom + 40,
+  const onViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      if (viewableItems.length > 0) {
+        const idx = viewableItems[0].index ?? 0;
+        setCurrentIdx(idx);
+        setAbsorbed((prev) => {
+          if (prev.has(idx)) return prev;
+          return new Set([...prev, idx]);
+        });
+      }
+    },
+    [],
+  );
+
+  const viewabilityConfig = useRef({
+    viewAreaCoveragePercentThreshold: 50,
+  }).current;
+
+  const goto = (idx: number) => {
+    flatListRef.current?.scrollToIndex({ index: idx, animated: true });
+  };
+
+  const getItemLayout = (_: unknown, index: number) => ({
+    length: SCREEN_W,
+    offset: SCREEN_W * index,
+    index,
+  });
+
+  const onListAreaLayout = (e: LayoutChangeEvent) => {
+    setListHeight(e.nativeEvent.layout.height);
+  };
+
+  const renderCard = ({ item }: { item: CardDef }) => (
+    <View
+      style={{
+        width: SCREEN_W,
+        height: listHeight,
+        paddingHorizontal: CARD_H_PAD,
       }}
-      showsVerticalScrollIndicator={false}
-      onScroll={Animated.event(
-        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-        { useNativeDriver: true }
-      )}
-      scrollEventThrottle={16}
     >
-      {/* ── Section Title ── */}
-      <View className="mb-2">
-        <Text className="text-3xl font-headingBold text-text-primary dark:text-text-primary-dark">
-          My Dharma
-        </Text>
-        <Text className="text-sm font-ui text-text-secondary dark:text-text-secondary-dark mt-1">
-          Your path, your pace, your practice.
-        </Text>
-      </View>
+      {/* ── Card Sheet ── */}
+      <View className="flex-1 bg-surface-dark rounded-[22px] border border-white/[0.07] overflow-hidden">
+        {/* Card Header */}
+        <View className="flex-row items-center gap-2.5 px-5 pt-4 pb-2.5">
+          <View className="w-[38px] h-[38px] rounded-[12px] bg-highlight/10 items-center justify-center">
+            <Text className="text-[18px]">{item.icon}</Text>
+          </View>
+          <View className="flex-1">
+            <Text className="font-headingMedium text-[20px] text-text-primary dark:text-text-primary-dark leading-[22px]">
+              {item.title}
+            </Text>
+            <Text className="font-ui text-[10.5px] text-text-secondary dark:text-text-secondary-dark mt-[1px]">
+              {item.sub}
+            </Text>
+          </View>
+        </View>
 
-      {/* ── Categories ── */}
-      <View className="mt-5 mb-6">
-        <SectionLabel variant="gold" className="mb-3 ml-0.5">
-          Explore paths
-        </SectionLabel>
+        {/* Card Content — vertically scrollable */}
         <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: 8, paddingRight: 20 }}
+          className="flex-1"
+          contentContainerStyle={{ paddingBottom: 24 }}
+          showsVerticalScrollIndicator={false}
+          nestedScrollEnabled
         >
-          {CATEGORIES.map((cat) => (
-            <CategoryChip
-              key={cat.id}
-              category={cat}
-              isActive={activeCategory === cat.id}
-              onPress={() => setActiveCategory(cat.id)}
-            />
-          ))}
+          <CardContent cardKey={item.key} />
         </ScrollView>
       </View>
+    </View>
+  );
 
-      {/* ── Divider ── */}
-      <View className="h-px bg-border dark:bg-border-dark mb-5" />
+  return (
+    <View className="flex-1">
+      {/* ── Top row ── */}
+      <View className="flex-row items-center justify-between px-5 pt-3 pb-1">
+        <View>
+          <Text className="font-headingBold text-[26px] text-text-primary dark:text-text-primary-dark leading-[28px]">
+            Cosmic Digest
+          </Text>
+          <Text className="font-ui text-[11px] text-text-secondary dark:text-text-secondary-dark mt-0.5">
+            {PD.date} · {PD.vara}
+          </Text>
+        </View>
+        <SacredSeal absorbed={absorbed} />
+      </View>
 
-      {/* ── Card Stack ── */}
-      <SectionLabel variant="default" className="mb-4 ml-0.5">
-        Your dharma toolkit
-      </SectionLabel>
-
-      <View style={{ paddingBottom: OVERLAP + 12 }}>
-        {DHARMA_CARDS.map((card, index) => (
-          <DharmaCard
-            key={card.id}
-            card={card}
-            index={index}
-            scrollY={scrollY}
+      {/* ── Progress bars (story-style) ── */}
+      {/* <View className="flex-row gap-[2px] px-5 pb-2.5">
+        {CARD_DEFS.map((_, i) => (
+          <View
+            key={i}
+            className="flex-1 h-[2.5px] rounded-sm"
+            style={{
+              backgroundColor: absorbed.has(i)
+                ? "#D4960A"
+                : i === currentIdx
+                  ? "rgba(200,148,58,0.45)"
+                  : "rgba(255,255,255,0.07)",
+            }}
           />
+        ))}
+      </View> */}
+
+      {/* ── Swipeable cards area ── */}
+      <View className="flex-1" onLayout={onListAreaLayout}>
+        {listHeight > 0 && (
+          <FlatList
+            ref={flatListRef}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            data={CARD_DEFS}
+            keyExtractor={(item) => item.key}
+            renderItem={renderCard}
+            getItemLayout={getItemLayout}
+            onViewableItemsChanged={onViewableItemsChanged}
+            viewabilityConfig={viewabilityConfig}
+            style={{ height: listHeight }}
+          />
+        )}
+      </View>
+
+      {/* ── Dot indicators ── */}
+      <View className="flex-row justify-center items-center gap-[5px] pt-2.5 pb-1">
+        {CARD_DEFS.map((_, i) => (
+          <Pressable key={i} onPress={() => goto(i)}>
+            <View
+              className="h-[6px] rounded-full"
+              style={{
+                width: i === currentIdx ? 18 : 6,
+                backgroundColor:
+                  i === currentIdx
+                    ? "#D4960A"
+                    : absorbed.has(i)
+                      ? "rgba(200,148,58,0.5)"
+                      : "rgba(255,255,255,0.12)",
+              }}
+            />
+          </Pressable>
         ))}
       </View>
 
-      {/* ── Bottom Wisdom ── */}
-      <View className="mt-6 items-center pb-4">
-        <View className="h-px w-16 bg-border dark:bg-border-dark mb-4" />
-        <Text className="text-xs font-headingMedium text-text-secondary/50 dark:text-text-secondary-dark/50 italic text-center">
-          "Yoga is the journey of the self,{"\n"}through the self, to the self."
+      {/* ── Dharma Library ── */}
+      <View className="px-5 pt-2.5">
+        <Text className="text-[9px] tracking-[1.2px] uppercase font-uiSemiBold text-white/30 mb-1.5">
+          YOUR DHARMA
         </Text>
-        <Text className="text-[9px] font-uiSemiBold text-highlight/40 dark:text-highlight-dark/40 mt-2 tracking-[1.5px] uppercase">
-          Bhagavad Gita 6.20
+        <Text className="font-heading text-[20px] text-text-primary dark:text-text-primary-dark mb-3">
+          Library
         </Text>
       </View>
-    </Animated.ScrollView>
+      <View
+        className="px-5"
+        style={{ paddingBottom: Math.max(insets.bottom, 20) }}
+      >
+        {LIBRARY_CARDS.map((card) => (
+          <LibraryCard
+            key={card.id}
+            card={card}
+            isOpen={expanded === card.id}
+            onToggle={() =>
+              setExpanded((e) => (e === card.id ? null : card.id))
+            }
+          />
+        ))}
+      </View>
+    </View>
   );
 }

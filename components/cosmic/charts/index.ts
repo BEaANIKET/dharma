@@ -5,3 +5,4 @@ export { default as NakshatraWheel } from "./NakshatraWheel";
 export { default as MuhurtaClock } from "./MuhurtaClock";
 export { default as DayGlance } from "./DayGlance";
 export { default as DirCompass } from "./DirCompass";
+export { default as CosmicGauge } from "./CosmicGauge";
